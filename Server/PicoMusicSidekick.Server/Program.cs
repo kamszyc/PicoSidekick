@@ -1,4 +1,5 @@
-﻿using System.IO.Ports;
+﻿using Diacritics.Extensions;
+using System.IO.Ports;
 using System.Management;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -51,8 +52,8 @@ namespace PicoMusicSidekick.Server
                 {
                     var mediaRequest = new MediaRequest
                     {
-                        Artist = artist,
-                        Title = title,
+                        Artist = artist.RemoveDiacritics(),
+                        Title = title.RemoveDiacritics(),
                     };
                     string request = JsonSerializer.Serialize(mediaRequest, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
                     port.WriteLine(request);
