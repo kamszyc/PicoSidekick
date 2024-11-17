@@ -11,28 +11,35 @@ namespace PicoMusicSidekick.Server
     {
         public static string GetCircuitPythonDataSerialPortName()
         {
+            Dictionary<string, string> serialPortsPnpDeviceIdToDeviceId;
+            using (var searcher = new ManagementObjectSearcher
+                        ($"SELECT * FROM WIN32_SerialPort"))
+            {
+                serialPortsPnpDeviceIdToDeviceId = searcher
+                    .Get()
+                    .Cast<ManagementBaseObject>()
+                    .ToDictionary(m => m.GetPropertyValue("PNPDeviceID") as string,
+                                  m => m.GetPropertyValue("DeviceID") as string);
+            }
+
+            if (serialPortsPnpDeviceIdToDeviceId.Count == 0)
+                return null;
+
+            string whereClause = BuildWhereClause(serialPortsPnpDeviceIdToDeviceId);
             string pnpDeviceId;
             using (var searcher = new ManagementObjectSearcher
-                        ("SELECT * FROM WIN32_PnPEntity"))
+                        ($"SELECT * FROM WIN32_PnPEntity WHERE {whereClause}"))
             {
-                var ports = searcher.Get()
-                                    .Cast<ManagementObject>()
-                                    .Where(m => GetDeviceName(m)?.Contains("CircuitPython CDC2") ?? false)
-                                    .ToList();
-                pnpDeviceId = ports.First().GetPropertyValue("DeviceID") as string;
+                pnpDeviceId = searcher.Get()
+                                      .Cast<ManagementObject>()
+                                      .FirstOrDefault(m => GetDeviceName(m)?.Contains("CircuitPython CDC2") ?? false)?
+                                      .GetPropertyValue("DeviceID") as string;
             }
 
-            string portName;
-            using (var searcher = new ManagementObjectSearcher
-                        ("SELECT * FROM WIN32_SerialPort"))
-            {
-                var serialPort = searcher.Get()
-                                    .Cast<ManagementBaseObject>()
-                                    .First(m => m.GetPropertyValue("PNPDeviceID") as string == pnpDeviceId);
-                portName = serialPort.GetPropertyValue("DeviceID") as string;
-            }
+            if (pnpDeviceId == null)
+                return null;
 
-            return portName;
+            return serialPortsPnpDeviceIdToDeviceId[pnpDeviceId];
         }
 
         private static string GetDeviceName(ManagementObject mo)
@@ -50,6 +57,14 @@ namespace PicoMusicSidekick.Server
             }
 
             return null;
+        }
+
+        private static string BuildWhereClause(Dictionary<string, string> serialPortsPnpDeviceIdToDeviceId)
+        {
+            // WQL is subset of SQL and doesn't support IN operator
+            return string.Join(" OR ", serialPortsPnpDeviceIdToDeviceId.Keys
+                                                                       .Select(id => id.Replace("\\", "\\\\"))
+                                                                       .Select(id => $"(DeviceID = \"{id}\")"));
         }
     }
 }

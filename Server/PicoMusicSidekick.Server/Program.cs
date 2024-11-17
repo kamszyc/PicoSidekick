@@ -11,24 +11,39 @@ namespace PicoMusicSidekick.Server
     {
         private static async Task Main(string[] args)
         {
+            Console.WriteLine("Initializing...");
+            
             var mediaManager = new MediaManager();
             await mediaManager.StartAsync();
 
             var session = GetSession(mediaManager);
             if (session == null)
+            {
+                Console.Error.WriteLine("No media session found. Exiting");
                 return;
+            }
 
             string portName = ComDeviceFinder.GetCircuitPythonDataSerialPortName();
+            if (portName == null)
+            {
+                Console.Error.WriteLine("No compatible Circuit Python serial port found. Exiting");
+                return;
+            }
 
             SerialPort port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One);
             port.DtrEnable = true;
             port.Open();
 
+            Console.WriteLine("Initialized!");
+
             while (true)
             {
                 var mediaProperties = await session
-                    .ControlSession
+                    .ControlSession?
                     .TryGetMediaPropertiesAsync();
+
+                if (mediaProperties == null)
+                    continue;
 
                 string artist = GetArtistName(mediaProperties);
                 string title = mediaProperties.Title;
