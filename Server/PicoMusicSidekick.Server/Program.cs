@@ -13,7 +13,7 @@ namespace PicoMusicSidekick.Server
         private static async Task Main(string[] args)
         {
             Console.WriteLine("Initializing...");
-            
+
             var mediaManager = new MediaManager();
             await mediaManager.StartAsync();
 
@@ -24,21 +24,19 @@ namespace PicoMusicSidekick.Server
                 return;
             }
 
-            string portName = ComDeviceFinder.GetCircuitPythonDataSerialPortName();
-            if (portName == null)
-            {
-                Console.Error.WriteLine("No compatible Circuit Python serial port found. Exiting");
-                return;
-            }
-
-            SerialPort port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One);
-            port.DtrEnable = true;
-            port.Open();
-
-            Console.WriteLine("Initialized!");
-
+            SerialPort port = OpenPort();
             while (true)
             {
+                if (port == null || !port.IsOpen)
+                {
+                    port = OpenPort();
+                    if (port == null)
+                    {
+                        await Task.Delay(5000);
+                        continue;
+                    }
+                }
+
                 var mediaProperties = await session
                     .ControlSession?
                     .TryGetMediaPropertiesAsync();
@@ -46,21 +44,45 @@ namespace PicoMusicSidekick.Server
                 if (mediaProperties == null)
                     continue;
 
-                string artist = GetArtistName(mediaProperties);
-                string title = mediaProperties.Title;
-                if (!string.IsNullOrEmpty(artist) && !string.IsNullOrEmpty(title))
+                try
                 {
-                    var mediaRequest = new MediaRequest
+                    string artist = GetArtistName(mediaProperties);
+                    string title = mediaProperties.Title;
+                    if (!string.IsNullOrEmpty(artist) && !string.IsNullOrEmpty(title))
                     {
-                        Artist = artist.RemoveDiacritics(),
-                        Title = title.RemoveDiacritics(),
-                    };
-                    string request = JsonSerializer.Serialize(mediaRequest, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-                    port.WriteLine(request);
+                        var mediaRequest = new MediaRequest
+                        {
+                            Artist = artist.RemoveDiacritics(),
+                            Title = title.RemoveDiacritics(),
+                        };
+                        string request = JsonSerializer.Serialize(mediaRequest, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                        port.WriteLine(request);
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    Console.WriteLine("Disconnected!");
                 }
 
                 await Task.Delay(500);
             }
+        }
+
+        private static SerialPort OpenPort()
+        {
+            string portName = ComDeviceFinder.GetCircuitPythonDataSerialPortName();
+            if (portName == null)
+            {
+                Console.Error.WriteLine("No compatible Circuit Python serial port found");
+                return null;
+            }
+
+            var port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One);
+            port.DtrEnable = true;
+            port.Open();
+
+            Console.WriteLine("Connected!");
+            return port;
         }
 
         private static MediaManager.MediaSession GetSession(MediaManager mediaManager)
