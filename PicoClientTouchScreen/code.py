@@ -16,11 +16,126 @@ from adafruit_display_text import label, scrolling_label
 import adafruit_ili9341
 from xpt2046 import Touch
 
+TFT_WIDTH = 320
+TFT_HEIGHT = 240
+
+touch_spi_clk = board.GP10
+touch_spi_mosi = board.GP11
+touch_spi_miso = board.GP8
+
+touch_cs = board.GP12
+
+touch_x_min = 120
+touch_x_max = 1847
+touch_y_min = 148
+touch_y_max = 1914
+
+touch_spi = busio.SPI(touch_spi_clk, MOSI=touch_spi_mosi, MISO=touch_spi_miso)
+touch = Touch(touch_spi, cs=touch_cs,
+            x_min=touch_x_min, x_max=touch_x_max,
+            y_min=touch_y_min, y_max=touch_y_max)
+
+taskInterval_50ms = 0.050
+NxTick = time.monotonic() + taskInterval_50ms
+
+EVT_NO = const(0)
+EVT_PenDown = const(1)
+EVT_PenUp   = const(2)
+EVT_PenRept = const(3)
+touchEvent  = EVT_NO
+
+touchSt_Idle_0     = const(0)
+touchSt_DnDeb_1    = const(1)
+touchSt_Touching_2 = const(2)
+touchSt_UpDeb_3    = const(3)
+touchSt = touchSt_Idle_0
+
+touchDb_NUM = const(3)
+touchDb = touchDb_NUM
+touching = False
+    
+
+async def handle_touch():
+    while True:
+        curTick = time.monotonic()
+        if curTick >= NxTick:
+            NxTick = curTick + taskInterval_50ms
+            #print(NxTick)
+            touch_det_task()
+            
+        #handle touch event
+        if touchEvent != EVT_NO:
+            if touchEvent == EVT_PenDown:
+                print('ev PenDown - ', touchedX, " : ", touchedY)
+
+            if touchEvent == EVT_PenUp:
+                print('ev PenUp - ')
+                
+            touchEvent = EVT_NO
+
+        await asyncio.sleep(0)
+
+def touch_det_task():
+    global touch
+    global touching
+    global touchSt
+    global touchEvent
+    global touchedX, touchedY
+    global touchDb
+    
+    validXY = valid_touch(TFT_WIDTH, TFT_HEIGHT)
+
+    if touchSt == touchSt_Idle_0:
+        if validXY != None:
+            touchDb = touchDb_NUM
+            touchSt = touchSt_DnDeb_1
+    
+    elif touchSt == touchSt_DnDeb_1:
+        if validXY != None:
+            touchDb = touchDb-1
+            if touchDb==0:
+                touchSt = touchSt_Touching_2
+                touchEvent = EVT_PenDown
+                touchedX, touchedY = validXY
+                touching = True
+        else:
+            touchSt = touchSt_Idle_0
+            
+    elif touchSt == touchSt_Touching_2:
+        if validXY != None:
+            touchedX, touchedY = validXY
+            touchEvent = EVT_PenRept
+        else:
+            touchDb=touchDb_NUM
+            touchSt = touchSt_UpDeb_3
+            
+    elif touchSt == touchSt_UpDeb_3:
+        if validXY != None:
+            touchSt = touchSt_Touching_2
+        else:
+            touchDb=touchDb-1
+            if touchDb==0:
+                touchSt = touchSt_Idle_0
+                touchEvent = EVT_PenUp
+                touching = False
+
+
+def valid_touch(scrWidth, scrHeight):
+    xy = touch.raw_touch()
+    
+    if xy == None:
+        return None
+    
+    normailzedX, normailzedY = touch.normalize(*xy)
+    if (normailzedX < 0 or normailzedX >= scrWidth
+            or normailzedY < 0 or normailzedY >= scrHeight):
+            return None
+        
+    return (normailzedX, normailzedY)
+
+
 async def render_display():
     displayio.release_displays()
-
-    TFT_WIDTH = 320
-    TFT_HEIGHT = 240
 
     tft_spi_clk = board.GP6
     tft_spi_mosi = board.GP7
@@ -28,24 +143,7 @@ async def render_display():
     tft_dc = board.GP15
     tft_res = board.GP14
 
-    touch_spi_clk = board.GP10
-    touch_spi_mosi = board.GP11
-    touch_spi_miso = board.GP8
-
-    touch_cs = board.GP12
-
-    touch_x_min = 120
-    touch_x_max = 1847
-    touch_y_min = 148
-    touch_y_max = 1914
-
-    touch_spi = busio.SPI(touch_spi_clk, MOSI=touch_spi_mosi, MISO=touch_spi_miso)
-    touch = Touch(touch_spi, cs=touch_cs,
-                x_min=touch_x_min, x_max=touch_x_max,
-                y_min=touch_y_min, y_max=touch_y_max)
-
     tft_spi = busio.SPI(tft_spi_clk, MOSI=tft_spi_mosi)
-
 
     display_bus = displayio.FourWire(
         tft_spi, command=tft_dc, chip_select=tft_cs, reset=tft_res)
@@ -91,8 +189,8 @@ async def render_display():
         await asyncio.sleep(0.1)
 
 async def main():
+    handle_touch_task = asyncio.create_task(handle_touch())
     render_display_task = asyncio.create_task(render_display())
-    await asyncio.gather(render_display_task)
-
+    await asyncio.gather(handle_touch_task, render_display_task)
 
 asyncio.run(main())
