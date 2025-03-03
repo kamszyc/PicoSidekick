@@ -24,7 +24,7 @@ namespace PicoMusicSidekick.Server
                 return;
             }
 
-            SerialPort port = OpenPort();
+            SerialPort port = null;
             while (true)
             {
                 if (port == null || !port.IsOpen)
