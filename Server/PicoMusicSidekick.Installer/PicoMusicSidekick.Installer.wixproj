@@ -1,0 +1,9 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.2">
+  <ItemGroup>
+    <ProjectReference Include="..\PicoMusicSidekick.Server\PicoMusicSidekick.Server.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+  </ItemGroup>
+  <Target Name="CollectSuggestedVisualStudioComponentIds" />
+</Project>

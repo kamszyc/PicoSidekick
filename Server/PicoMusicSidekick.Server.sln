@@ -5,16 +5,52 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicoMusicSidekick.Server", "PicoMusicSidekick.Server\PicoMusicSidekick.Server.csproj", "{02587125-03F9-40A7-914F-A2013C51F0B7}"
 EndProject
+Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "PicoMusicSidekick.Installer", "PicoMusicSidekick.Installer\PicoMusicSidekick.Installer.wixproj", "{F3A2C092-2578-4431-A21A-930EB0FFC773}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM64 = Debug|ARM64
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|ARM64 = Release|ARM64
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{02587125-03F9-40A7-914F-A2013C51F0B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{02587125-03F9-40A7-914F-A2013C51F0B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Debug|x64.Build.0 = Debug|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Debug|x86.Build.0 = Debug|Any CPU
 		{02587125-03F9-40A7-914F-A2013C51F0B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02587125-03F9-40A7-914F-A2013C51F0B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Release|ARM64.Build.0 = Release|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Release|x64.ActiveCfg = Release|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Release|x64.Build.0 = Release|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Release|x86.ActiveCfg = Release|Any CPU
+		{02587125-03F9-40A7-914F-A2013C51F0B7}.Release|x86.Build.0 = Release|Any CPU
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Debug|Any CPU.Build.0 = Debug|x64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Debug|ARM64.Build.0 = Debug|ARM64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Debug|x64.ActiveCfg = Debug|x64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Debug|x64.Build.0 = Debug|x64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Debug|x86.ActiveCfg = Debug|x86
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Debug|x86.Build.0 = Debug|x86
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Release|Any CPU.ActiveCfg = Release|x64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Release|Any CPU.Build.0 = Release|x64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Release|ARM64.ActiveCfg = Release|ARM64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Release|ARM64.Build.0 = Release|ARM64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Release|x64.ActiveCfg = Release|x64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Release|x64.Build.0 = Release|x64
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Release|x86.ActiveCfg = Release|x86
+		{F3A2C092-2578-4431-A21A-930EB0FFC773}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
