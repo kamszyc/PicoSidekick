@@ -1,108 +1,31 @@
 ﻿using Diacritics.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.IO.Ports;
 using System.Management;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using Windows.Media.Control;
+using WindowsFormsLifetime;
 using WindowsMediaController;
 
 namespace PicoMusicSidekick.Server
 {
     internal static class Program
     {
-        private static async Task Main(string[] args)
+        private static void Main(string[] args)
         {
-            Console.WriteLine("Initializing...");
-
-            var mediaManager = new MediaManager();
-            await mediaManager.StartAsync();
-
-            var session = GetSession(mediaManager);
-            if (session == null)
+            var builder = Host.CreateApplicationBuilder(args);
+            builder.UseWindowsFormsLifetime(() =>
             {
-                Console.Error.WriteLine("No media session found. Exiting");
-                return;
-            }
+                return new ApplicationContext();
+            });
+            builder.Services.AddHostedService<SerialPortHostedService>();
+            builder.Services.AddHostedService<TrayIconHostedService>();
 
-            SerialPort port = null;
-            while (true)
-            {
-                if (port == null || !port.IsOpen)
-                {
-                    port = OpenPort();
-                    if (port == null)
-                    {
-                        await Task.Delay(5000);
-                        continue;
-                    }
-                }
-
-                var mediaProperties = await session
-                    .ControlSession?
-                    .TryGetMediaPropertiesAsync();
-
-                if (mediaProperties == null)
-                    continue;
-
-                try
-                {
-                    string artist = GetArtistName(mediaProperties);
-                    string title = mediaProperties.Title;
-                    if (!string.IsNullOrEmpty(artist) && !string.IsNullOrEmpty(title))
-                    {
-                        var mediaRequest = new MediaRequest
-                        {
-                            Artist = artist.RemoveDiacritics(),
-                            Title = title.RemoveDiacritics(),
-                        };
-                        string request = JsonSerializer.Serialize(mediaRequest, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-                        port.WriteLine(request);
-                    }
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Disconnected!");
-                }
-
-                await Task.Delay(500);
-            }
-        }
-
-        private static SerialPort OpenPort()
-        {
-            string portName = ComDeviceFinder.GetCircuitPythonDataSerialPortName();
-            if (portName == null)
-            {
-                Console.Error.WriteLine("No compatible Circuit Python serial port found");
-                return null;
-            }
-
-            var port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One);
-            port.DtrEnable = true;
-            port.Open();
-
-            Console.WriteLine("Connected!");
-            return port;
-        }
-
-        private static MediaManager.MediaSession GetSession(MediaManager mediaManager)
-        {
-            const string SpotifyPrefix = "Spotify";
-            var spotifyMediaSession = mediaManager.CurrentMediaSessions.FirstOrDefault(s => s.Key.StartsWith(SpotifyPrefix)).Value;
-            if (spotifyMediaSession != null)
-            {
-                return spotifyMediaSession;
-            }
-            return mediaManager.CurrentMediaSessions.FirstOrDefault().Value;
-        }
-
-        private static string GetArtistName(GlobalSystemMediaTransportControlsSessionMediaProperties mediaProperties)
-        {
-            if (!string.IsNullOrEmpty(mediaProperties.Artist))
-                return mediaProperties.Artist;
-
-            // for podcasts
-            return mediaProperties.AlbumTitle;
+            var app = builder.Build();
+            app.Run();
         }
     }
 }
