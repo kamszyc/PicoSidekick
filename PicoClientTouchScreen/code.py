@@ -56,6 +56,10 @@ touching = False
     
 
 async def handle_touch():
+    global NxTick
+    global touchEvent
+    global touchedX, touchedY
+    cc = ConsumerControl(usb_hid.devices)
     while True:
         curTick = time.monotonic()
         if curTick >= NxTick:
@@ -71,6 +75,8 @@ async def handle_touch():
             if touchEvent == EVT_PenUp:
                 print('ev PenUp - ')
                 
+                cc.send(ConsumerControlCode.PLAY_PAUSE)
+                
             touchEvent = EVT_NO
 
         await asyncio.sleep(0)
@@ -83,7 +89,7 @@ def touch_det_task():
     global touchedX, touchedY
     global touchDb
     
-    validXY = valid_touch(TFT_WIDTH, TFT_HEIGHT)
+    validXY = valid_touch(TFT_HEIGHT, TFT_WIDTH)
 
     if touchSt == touchSt_Idle_0:
         if validXY != None:
@@ -150,7 +156,6 @@ async def render_display():
 
     display = adafruit_ili9341.ILI9341(display_bus,
                         width=TFT_WIDTH, height=TFT_HEIGHT)
-    display.rotation = 90
     scrWidth = display.width
     scrHeight = display.height
 
@@ -158,9 +163,9 @@ async def render_display():
     display.root_group = splash
 
     text_group = displayio.Group(scale=2, x=10, y=10)
-    artist_label = scrolling_label.ScrollingLabel(terminalio.FONT, text="Waiting...", max_characters = 20, animate_time=0.5)
+    artist_label = scrolling_label.ScrollingLabel(terminalio.FONT, text="Waiting...", max_characters = 25, animate_time=0.5)
     text_group.append(artist_label) 
-    title_label = scrolling_label.ScrollingLabel(terminalio.FONT, text="Play some music!", max_characters = 20, animate_time=0.5)
+    title_label = scrolling_label.ScrollingLabel(terminalio.FONT, text="Play some music!", max_characters = 25, animate_time=0.5)
     title_label.y = 20
     text_group.append(title_label)
     splash.append(text_group)
