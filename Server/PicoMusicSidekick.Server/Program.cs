@@ -59,7 +59,7 @@ namespace PicoMusicSidekick.Server
                         port.WriteLine(request);
                     }
                 }
-                catch (InvalidOperationException)
+                catch (Exception)
                 {
                     Console.WriteLine("Disconnected!");
                 }
@@ -88,9 +88,10 @@ namespace PicoMusicSidekick.Server
         private static MediaManager.MediaSession GetSession(MediaManager mediaManager)
         {
             const string SpotifyPrefix = "Spotify";
-            if (mediaManager.CurrentMediaSessions.Any(s => s.Key.StartsWith(SpotifyPrefix)))
+            var spotifyMediaSession = mediaManager.CurrentMediaSessions.FirstOrDefault(s => s.Key.StartsWith(SpotifyPrefix)).Value;
+            if (spotifyMediaSession != null)
             {
-                return mediaManager.CurrentMediaSessions.First(s => s.Key.StartsWith(SpotifyPrefix)).Value;
+                return spotifyMediaSession;
             }
             return mediaManager.CurrentMediaSessions.FirstOrDefault().Value;
         }
