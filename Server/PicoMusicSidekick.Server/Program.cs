@@ -17,10 +17,7 @@ namespace PicoMusicSidekick.Server
         private static void Main(string[] args)
         {
             var builder = Host.CreateApplicationBuilder(args);
-            builder.UseWindowsFormsLifetime(() =>
-            {
-                return new ApplicationContext();
-            });
+            builder.UseWindowsFormsLifetime<ApplicationContext>();
             builder.Services.AddHostedService<SerialPortHostedService>();
             builder.Services.AddHostedService<TrayIconHostedService>();
 
