@@ -10,13 +10,13 @@ using Windows.Media.Control;
 using WindowsFormsLifetime;
 using WindowsMediaController;
 
-namespace PicoMusicSidekick.Server
+namespace PicoMusicSidekick.Host
 {
     internal static class Program
     {
         private static void Main(string[] args)
         {
-            var builder = Host.CreateApplicationBuilder(args);
+            var builder = Microsoft.Extensions.Hosting.Host.CreateApplicationBuilder(args);
             builder.UseWindowsFormsLifetime<ApplicationContext>();
             builder.Services.AddHostedService<SerialPortHostedService>();
             builder.Services.AddHostedService<TrayIconHostedService>();

@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WindowsFormsLifetime;
 
-namespace PicoMusicSidekick.Server
-{
+namespace PicoMusicSidekick.Host
+{   
     public class TrayIconHostedService : BackgroundService
     {
         private IGuiContext _guiContext;

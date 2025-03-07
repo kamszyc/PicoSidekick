@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PicoMusicSidekick.Server
+namespace PicoMusicSidekick.Host
 {
     public class MediaRequest
     {

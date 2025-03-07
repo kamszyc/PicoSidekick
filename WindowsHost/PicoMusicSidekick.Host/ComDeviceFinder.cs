@@ -5,7 +5,7 @@ using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PicoMusicSidekick.Server
+namespace PicoMusicSidekick.Host
 {
     internal static class ComDeviceFinder
     {
