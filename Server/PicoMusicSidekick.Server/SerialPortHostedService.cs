@@ -29,16 +29,16 @@ namespace PicoMusicSidekick.Server
             var mediaManager = new MediaManager();
             await mediaManager.StartAsync();
 
-            var session = GetSession(mediaManager);
-            if (session == null)
-            {
-                _logger.LogInformation("No media session found. Exiting");
-                return;
-            }
-
             SerialPort port = null;
             while (!stoppingToken.IsCancellationRequested)
             {
+                var session = GetSession(mediaManager);
+                if (session == null)
+                {
+                    _logger.LogInformation("No media session found");
+                    continue;
+                }
+
                 if (port == null || !port.IsOpen)
                 {
                     port = OpenPort();
