@@ -1,5 +1,6 @@
 ﻿using Diacritics.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
@@ -14,9 +15,16 @@ namespace PicoMusicSidekick.Server
 {
     public class SerialPortHostedService : BackgroundService
     {
+        private readonly ILogger<SerialPortHostedService> _logger;
+
+        public SerialPortHostedService(ILogger<SerialPortHostedService> logger)
+        {
+            _logger = logger;
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine("Initializing...");
+            _logger.LogInformation("Initializing...");
 
             var mediaManager = new MediaManager();
             await mediaManager.StartAsync();
@@ -24,7 +32,7 @@ namespace PicoMusicSidekick.Server
             var session = GetSession(mediaManager);
             if (session == null)
             {
-                Console.Error.WriteLine("No media session found. Exiting");
+                _logger.LogInformation("No media session found. Exiting");
                 return;
             }
 
@@ -65,19 +73,19 @@ namespace PicoMusicSidekick.Server
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Disconnected!");
+                    _logger.LogWarning("Disconnected!");
                 }
 
                 await Task.Delay(500);
             }
         }
 
-        private static SerialPort OpenPort()
+        private SerialPort OpenPort()
         {
             string portName = ComDeviceFinder.GetCircuitPythonDataSerialPortName();
             if (portName == null)
             {
-                Console.Error.WriteLine("No compatible Circuit Python serial port found");
+                _logger.LogInformation("No compatible Circuit Python serial port found");
                 return null;
             }
 
@@ -85,7 +93,7 @@ namespace PicoMusicSidekick.Server
             port.DtrEnable = true;
             port.Open();
 
-            Console.WriteLine("Connected!");
+            _logger.LogInformation("Connected!");
             return port;
         }
 
