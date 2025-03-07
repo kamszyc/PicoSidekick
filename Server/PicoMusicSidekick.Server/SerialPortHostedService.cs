@@ -60,16 +60,13 @@ namespace PicoMusicSidekick.Server
                 {
                     string artist = GetArtistName(mediaProperties);
                     string title = mediaProperties.Title;
-                    if (!string.IsNullOrEmpty(artist) && !string.IsNullOrEmpty(title))
+                    var mediaRequest = new MediaRequest
                     {
-                        var mediaRequest = new MediaRequest
-                        {
-                            Artist = artist.RemoveDiacritics(),
-                            Title = title.RemoveDiacritics(),
-                        };
-                        string request = JsonSerializer.Serialize(mediaRequest, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-                        port.WriteLine(request);
-                    }
+                        Artist = artist?.RemoveDiacritics() ?? string.Empty,
+                        Title = title?.RemoveDiacritics() ?? string.Empty,
+                    };
+                    string request = JsonSerializer.Serialize(mediaRequest, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                    port.WriteLine(request);
                 }
                 catch (Exception)
                 {
