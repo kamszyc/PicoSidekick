@@ -13,14 +13,11 @@ namespace PicoMusicSidekick.Host
     public class TrayIconHostedService : BackgroundService
     {
         private IGuiContext _guiContext;
-        private IHostApplicationLifetime _hostLifetime;
 
         public TrayIconHostedService(
-            IGuiContext guiContext,
-            IHostApplicationLifetime hostLifetime)
+            IGuiContext guiContext)
         {
             _guiContext = guiContext;
-            _hostLifetime = hostLifetime;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -29,7 +26,8 @@ namespace PicoMusicSidekick.Host
             {
                 var trayIcon = new NotifyIcon()
                 {
-                    Icon = SystemIcons.Information,
+                    Icon = new Icon("Pi.ico"),
+                    Text = "Pico Sidekick Host",
                     Visible = true,
                     ContextMenuStrip = new ContextMenuStrip()
                 };
