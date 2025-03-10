@@ -98,11 +98,22 @@ namespace PicoMusicSidekick.Host
         {
             const string SpotifyPrefix = "Spotify";
             var spotifyMediaSession = mediaManager.CurrentMediaSessions.FirstOrDefault(s => s.Key.StartsWith(SpotifyPrefix)).Value;
-            if (spotifyMediaSession != null)
+            if (spotifyMediaSession != null && IsSessionPlaying(spotifyMediaSession))
             {
                 return spotifyMediaSession;
             }
+            var firstPlayingMediaSession = mediaManager.CurrentMediaSessions.FirstOrDefault(s => IsSessionPlaying(s.Value)).Value;
+            if (firstPlayingMediaSession != null)
+            {
+                return firstPlayingMediaSession;
+            }
+
             return mediaManager.CurrentMediaSessions.FirstOrDefault().Value;
+        }
+
+        private static bool IsSessionPlaying(MediaManager.MediaSession spotifyMediaSession)
+        {
+            return spotifyMediaSession.ControlSession.GetPlaybackInfo().PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing;
         }
 
         private static string GetArtistName(GlobalSystemMediaTransportControlsSessionMediaProperties mediaProperties)
