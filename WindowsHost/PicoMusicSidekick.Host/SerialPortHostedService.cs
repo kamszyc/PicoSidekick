@@ -15,10 +15,14 @@ namespace PicoMusicSidekick.Host
 {
     public class SerialPortHostedService : BackgroundService
     {
+        private readonly TrayIconFactory _trayIconFactory;
         private readonly ILogger<SerialPortHostedService> _logger;
 
-        public SerialPortHostedService(ILogger<SerialPortHostedService> logger)
+        public SerialPortHostedService(
+            TrayIconFactory trayIconFactory,
+            ILogger<SerialPortHostedService> logger)
         {
+            _trayIconFactory = trayIconFactory;
             _logger = logger;
         }
 
@@ -28,6 +32,8 @@ namespace PicoMusicSidekick.Host
 
             var mediaManager = new MediaManager();
             await mediaManager.StartAsync();
+
+            await _trayIconFactory.CreateTrayIcon();
 
             SerialPort port = null;
             while (!stoppingToken.IsCancellationRequested)

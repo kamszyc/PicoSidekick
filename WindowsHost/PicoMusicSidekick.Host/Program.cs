@@ -19,7 +19,7 @@ namespace PicoMusicSidekick.Host
             var builder = Microsoft.Extensions.Hosting.Host.CreateApplicationBuilder(args);
             builder.Services.AddWindowsFormsLifetime<ApplicationContext>(preApplicationRunAction: serviceProvider => Application.SetColorMode(SystemColorMode.System));
             builder.Services.AddHostedService<SerialPortHostedService>();
-            builder.Services.AddHostedService<TrayIconHostedService>();
+            builder.Services.AddTransient<TrayIconFactory>();
 
             var app = builder.Build();
             app.Run();

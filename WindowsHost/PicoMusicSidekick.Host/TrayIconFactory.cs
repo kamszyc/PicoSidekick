@@ -10,17 +10,17 @@ using WindowsFormsLifetime;
 
 namespace PicoMusicSidekick.Host
 {   
-    public class TrayIconHostedService : BackgroundService
+    public class TrayIconFactory
     {
         private IGuiContext _guiContext;
 
-        public TrayIconHostedService(
+        public TrayIconFactory(
             IGuiContext guiContext)
         {
             _guiContext = guiContext;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        public Task CreateTrayIcon()
         {
             _guiContext.Invoke(() =>
             {
