@@ -158,15 +158,19 @@ async def render_display(play_button):
     splash = displayio.Group()
     display.root_group = splash
 
+    IDLE_ARTIST = "Waiting..."
+    IDLE_TITLE = "Play some music!"
+
     text_group = displayio.Group(scale=2, x=10, y=10)
-    artist_label = scrolling_label.ScrollingLabel(terminalio.FONT, text="Waiting...", max_characters = 25, animate_time=0.5)
+    artist_label = scrolling_label.ScrollingLabel(terminalio.FONT, text=IDLE_ARTIST, max_characters = 25, animate_time=0.5)
     text_group.append(artist_label) 
-    title_label = scrolling_label.ScrollingLabel(terminalio.FONT, text="Play some music!", max_characters = 25, animate_time=0.5)
+    title_label = scrolling_label.ScrollingLabel(terminalio.FONT, text=IDLE_TITLE, max_characters = 25, animate_time=0.5)
     title_label.y = 20
     text_group.append(title_label)
     splash.append(text_group)
     splash.append(play_button)
 
+    iterations_without_update = 0
     while True:
         if usb_cdc.data.in_waiting > 0:
             try:
@@ -182,6 +186,13 @@ async def render_display(play_button):
                         pass
             except Exception as e:
                 print("error")
+            iterations_without_update = 0
+        else:
+            iterations_without_update = iterations_without_update + 1
+            if iterations_without_update == 10:
+                artist_label.text = IDLE_ARTIST
+                title_label.text = IDLE_TITLE
+                iterations_without_update = 0
 
         artist_label.update()
         title_label.update()
