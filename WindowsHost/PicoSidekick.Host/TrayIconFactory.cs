@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WindowsFormsLifetime;
 
-namespace PicoMusicSidekick.Host
+namespace PicoSidekick.Host
 {   
     public class TrayIconFactory
     {
@@ -27,7 +27,7 @@ namespace PicoMusicSidekick.Host
                 var trayIcon = new NotifyIcon()
                 {
                     Icon = new Icon("Pi.ico"),
-                    Text = "Pico Sidekick Host",
+                    Text = "PicoSidekick Host",
                     Visible = true,
                     ContextMenuStrip = new ContextMenuStrip()
                 };

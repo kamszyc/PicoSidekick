@@ -10,7 +10,7 @@ using Windows.Media.Control;
 using WindowsFormsLifetime;
 using WindowsMediaController;
 
-namespace PicoMusicSidekick.Host
+namespace PicoSidekick.Host
 {
     internal static class Program
     {

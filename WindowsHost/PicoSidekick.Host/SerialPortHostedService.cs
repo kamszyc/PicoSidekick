@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Windows.Media.Control;
 using WindowsMediaController;
 
-namespace PicoMusicSidekick.Host
+namespace PicoSidekick.Host
 {
     public class SerialPortHostedService : BackgroundService
     {
