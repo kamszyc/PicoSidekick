@@ -16,9 +16,9 @@
 	  <None Remove="Pi.ico" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Content Include="Pi.ico">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
+		<Content Include="Pi.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -31,6 +31,7 @@
 	
 	<PropertyGroup>
 		<NoWarn>$(NoWarn);WFO5001</NoWarn>
+		<ApplicationIcon>Pi.ico</ApplicationIcon>
 	</PropertyGroup>
 
 </Project>
