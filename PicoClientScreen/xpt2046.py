@@ -122,7 +122,7 @@ class Touch(object):
     def normalize(self, x, y):
         """Normalize mean X,Y values to match LCD screen."""
         x = int(self.x_multiplier * x + self.x_add)
-        y = int(self.height - (self.y_multiplier * y + self.y_add))
+        y = int(self.y_multiplier * y + self.y_add)
         return x, y
 
     def raw_touch(self):

@@ -113,7 +113,7 @@ class TouchContext:
         return (normalizedX, normalizedY)
     
 
-async def handle_touch(touch_context):
+async def handle_touch(touch_context, play_button):
     cc = ConsumerControl(usb_hid.devices)
     while True:
         curTick = time.monotonic()
@@ -129,14 +129,16 @@ async def handle_touch(touch_context):
             if touch_context.touchEvent == EVT_PenUp:
                 print('ev PenUp - ')
                 
-                cc.send(ConsumerControlCode.PLAY_PAUSE)
+                if play_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                    print('play/pause')
+                    cc.send(ConsumerControlCode.PLAY_PAUSE)
                 
             touch_context.touchEvent = EVT_NO
 
         await asyncio.sleep(0)
 
 
-async def render_display():
+async def render_display(play_button):
     displayio.release_displays()
 
     tft_spi_clk = board.GP6
@@ -163,34 +165,7 @@ async def render_display():
     title_label.y = 20
     text_group.append(title_label)
     splash.append(text_group)
-    
-    # --| Button Config |-------------------------------------------------
-    BUTTON_X = 95
-    BUTTON_Y = 95
-    BUTTON_WIDTH = 50
-    BUTTON_HEIGHT = 50
-    BUTTON_STYLE = Button.RECT
-    BUTTON_FILL_COLOR = 0x00FFFF
-    BUTTON_OUTLINE_COLOR = 0xFF00FF
-    BUTTON_LABEL = "PLAY"
-    BUTTON_LABEL_COLOR = 0x000000
-
-    # --| Button Config |-------------------------------------------------
-
-    # Make the button
-    button = Button(
-        x=BUTTON_X,
-        y=BUTTON_Y,
-        width=BUTTON_WIDTH,
-        height=BUTTON_HEIGHT,
-        style=BUTTON_STYLE,
-        fill_color=BUTTON_FILL_COLOR,
-        outline_color=BUTTON_OUTLINE_COLOR,
-        label=BUTTON_LABEL,
-        label_font=terminalio.FONT,
-        label_color=BUTTON_LABEL_COLOR,
-    )
-    splash.append(button)
+    splash.append(play_button)
 
     while True:
         if usb_cdc.data.in_waiting > 0:
@@ -215,10 +190,35 @@ async def render_display():
 
         await asyncio.sleep(0.1)
 
+def create_play_button():
+    BUTTON_X = 135
+    BUTTON_Y = 95
+    BUTTON_WIDTH = 50
+    BUTTON_HEIGHT = 50
+    BUTTON_STYLE = Button.RECT
+    BUTTON_FILL_COLOR = 0x00FFFF
+    BUTTON_OUTLINE_COLOR = 0xFF00FF
+    BUTTON_LABEL = "PLAY"
+    BUTTON_LABEL_COLOR = 0x000000
+
+    return Button(
+        x=BUTTON_X,
+        y=BUTTON_Y,
+        width=BUTTON_WIDTH,
+        height=BUTTON_HEIGHT,
+        style=BUTTON_STYLE,
+        fill_color=BUTTON_FILL_COLOR,
+        outline_color=BUTTON_OUTLINE_COLOR,
+        label=BUTTON_LABEL,
+        label_font=terminalio.FONT,
+        label_color=BUTTON_LABEL_COLOR,
+    )
+
 async def main():
     touch_context = TouchContext()
-    handle_touch_task = asyncio.create_task(handle_touch(touch_context))
-    render_display_task = asyncio.create_task(render_display())
+    play_button = create_play_button()
+    handle_touch_task = asyncio.create_task(handle_touch(touch_context, play_button))
+    render_display_task = asyncio.create_task(render_display(play_button))
     await asyncio.gather(handle_touch_task, render_display_task)
 
 asyncio.run(main())
