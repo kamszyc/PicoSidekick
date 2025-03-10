@@ -15,6 +15,7 @@ from fourwire import FourWire
 from adafruit_display_text import label, scrolling_label
 import adafruit_ili9341
 from xpt2046 import Touch
+from adafruit_button import Button
 
 TFT_WIDTH = const(320)
 TFT_HEIGHT = const(240)
@@ -162,6 +163,34 @@ async def render_display():
     title_label.y = 20
     text_group.append(title_label)
     splash.append(text_group)
+    
+    # --| Button Config |-------------------------------------------------
+    BUTTON_X = 95
+    BUTTON_Y = 95
+    BUTTON_WIDTH = 50
+    BUTTON_HEIGHT = 50
+    BUTTON_STYLE = Button.RECT
+    BUTTON_FILL_COLOR = 0x00FFFF
+    BUTTON_OUTLINE_COLOR = 0xFF00FF
+    BUTTON_LABEL = "PLAY"
+    BUTTON_LABEL_COLOR = 0x000000
+
+    # --| Button Config |-------------------------------------------------
+
+    # Make the button
+    button = Button(
+        x=BUTTON_X,
+        y=BUTTON_Y,
+        width=BUTTON_WIDTH,
+        height=BUTTON_HEIGHT,
+        style=BUTTON_STYLE,
+        fill_color=BUTTON_FILL_COLOR,
+        outline_color=BUTTON_OUTLINE_COLOR,
+        label=BUTTON_LABEL,
+        label_font=terminalio.FONT,
+        label_color=BUTTON_LABEL_COLOR,
+    )
+    splash.append(button)
 
     while True:
         if usb_cdc.data.in_waiting > 0:
