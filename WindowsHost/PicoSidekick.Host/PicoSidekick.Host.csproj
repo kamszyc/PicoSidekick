@@ -25,8 +25,8 @@
 		<PackageReference Include="Diacritics" Version="3.3.29" />
 		<PackageReference Include="Dubya.WindowsMediaController" Version="2.5.5" />
 		<PackageReference Include="OswaldTechnologies.Extensions.Hosting.WindowsFormsLifetime" Version="1.2.0" />
-		<PackageReference Include="System.IO.Ports" Version="8.0.0" />
-		<PackageReference Include="System.Management" Version="8.0.0" />
+		<PackageReference Include="System.IO.Ports" Version="9.0.3" />
+		<PackageReference Include="System.Management" Version="9.0.3" />
 	</ItemGroup>
 	
 	<PropertyGroup>

@@ -17,6 +17,7 @@ namespace PicoSidekick.Host
     {
         private readonly TrayIconFactory _trayIconFactory;
         private readonly ILogger<SerialPortHostedService> _logger;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public SerialPortHostedService(
             TrayIconFactory trayIconFactory,
@@ -24,6 +25,7 @@ namespace PicoSidekick.Host
         {
             _trayIconFactory = trayIconFactory;
             _logger = logger;
+            _jsonSerializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -50,7 +52,7 @@ namespace PicoSidekick.Host
                     port = OpenPort();
                     if (port == null)
                     {
-                        await Task.Delay(5000);
+                        await Task.Delay(5000, stoppingToken);
                         continue;
                     }
                 }
@@ -71,7 +73,7 @@ namespace PicoSidekick.Host
                         Artist = artist?.RemoveDiacritics() ?? string.Empty,
                         Title = title?.RemoveDiacritics() ?? string.Empty,
                     };
-                    string request = JsonSerializer.Serialize(mediaRequest, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                    string request = JsonSerializer.Serialize(mediaRequest, _jsonSerializerOptions);
                     port.WriteLine(request);
                 }
                 catch (Exception)
@@ -79,7 +81,7 @@ namespace PicoSidekick.Host
                     _logger.LogWarning("Disconnected!");
                 }
 
-                await Task.Delay(500);
+                await Task.Delay(500, stoppingToken);
             }
         }
 
@@ -92,8 +94,10 @@ namespace PicoSidekick.Host
                 return null;
             }
 
-            var port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One);
-            port.DtrEnable = true;
+            var port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One)
+            {
+                DtrEnable = true
+            };
             port.Open();
 
             _logger.LogInformation("Connected!");
