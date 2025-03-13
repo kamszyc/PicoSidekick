@@ -63,4 +63,4 @@ jobs:
         name: "Release ${{ env.SHORT_SHA }}"
         files: PicoSidekickHost.zip
         draft: false
-        prerelease: false
+        prerelease: true
