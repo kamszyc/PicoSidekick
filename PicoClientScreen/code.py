@@ -160,13 +160,26 @@ async def render_display(play_button):
 
     IDLE_ARTIST = "Waiting..."
     IDLE_TITLE = "Play some music!"
+    IDLE_CPU = "CPU: unknown"
+    IDLE_RAM = "RAM: unknown"
 
     text_group = displayio.Group(scale=2, x=10, y=10)
+
     artist_label = scrolling_label.ScrollingLabel(terminalio.FONT, text=IDLE_ARTIST, max_characters = 25, animate_time=0.5)
     text_group.append(artist_label) 
+
     title_label = scrolling_label.ScrollingLabel(terminalio.FONT, text=IDLE_TITLE, max_characters = 25, animate_time=0.5)
     title_label.y = 20
     text_group.append(title_label)
+
+    cpu_label = scrolling_label.ScrollingLabel(terminalio.FONT, text=IDLE_CPU, max_characters = 25, animate_time=0.5)
+    cpu_label.y = 80
+    text_group.append(cpu_label)
+
+    ram_label = scrolling_label.ScrollingLabel(terminalio.FONT, text=IDLE_RAM, max_characters = 25, animate_time=0.5)
+    ram_label.y = 100
+    text_group.append(ram_label)
+
     splash.append(text_group)
     splash.append(play_button)
 
@@ -178,10 +191,26 @@ async def render_display(play_button):
                 if data_in:
                     try:
                         request = json.loads(data_in)
-                        if artist_label.text.strip() != request["artist"]:
-                            artist_label.text = request["artist"]
-                        if title_label.text.strip() != request["title"]:
-                            title_label.text = request["title"]
+
+                        request_artist_val = request["artist"]
+                        if request_artist_val is None:
+                            artist_label.text = IDLE_ARTIST
+                        elif artist_label.text.strip() != request_artist_val:
+                            artist_label.text = request_artist_val
+
+                        request_title_val = request["title"]
+                        if request_title_val is None:
+                            title_label.text = IDLE_TITLE
+                        elif title_label.text.strip() != request_title_val:
+                            title_label.text = request_title_val
+
+                        cpu_label_value = "CPU: " + str(request["usedCPUPercent"]) + "%"
+                        if cpu_label.text.strip() != cpu_label_value:
+                            cpu_label.text = cpu_label_value
+
+                        ram_label_value = "RAM: " + str(request["usedRAMGigabytes"]) + "/" + str(request["totalRAMGigabytes"]) + "GB"
+                        if ram_label.text.strip() != ram_label_value:
+                            ram_label.text = ram_label_value
                     except ValueError:
                         pass
             except Exception as e:
@@ -192,10 +221,14 @@ async def render_display(play_button):
             if iterations_without_update == 10:
                 artist_label.text = IDLE_ARTIST
                 title_label.text = IDLE_TITLE
+                cpu_label.text = IDLE_CPU
+                ram_label.text = IDLE_RAM
                 iterations_without_update = 0
 
         artist_label.update()
         title_label.update()
+        cpu_label.update()
+        ram_label.update()
 
         display.refresh()
 

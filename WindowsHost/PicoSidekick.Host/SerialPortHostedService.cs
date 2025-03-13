@@ -1,8 +1,10 @@
 ﻿using Diacritics.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -37,52 +39,76 @@ namespace PicoSidekick.Host
 
             await _trayIconFactory.CreateTrayIcon();
 
+            ComputerInfo computerInfo = new ComputerInfo();
+
+            float totalRamInGigabytes = BytesToGigabytes(computerInfo.TotalPhysicalMemory);
+            float totalRamInGigabytesRounded = (float)Math.Round(totalRamInGigabytes, 1);
+            var cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            var availableRamCounter = new PerformanceCounter("Memory", "Available Bytes");
+
             SerialPort port = null;
             while (!stoppingToken.IsCancellationRequested)
             {
-                var session = GetSession(mediaManager);
-                if (session == null)
-                {
-                    _logger.LogInformation("No media session found");
-                    continue;
-                }
-
-                if (port == null || !port.IsOpen)
-                {
-                    port = OpenPort();
-                    if (port == null)
-                    {
-                        await Task.Delay(5000, stoppingToken);
-                        continue;
-                    }
-                }
-
-                var mediaProperties = await session
-                    .ControlSession?
-                    .TryGetMediaPropertiesAsync();
-
-                if (mediaProperties == null)
-                    continue;
-
                 try
                 {
-                    string artist = GetArtistName(mediaProperties);
-                    string title = mediaProperties.Title;
-                    var mediaRequest = new MediaRequest
+                    var session = GetSession(mediaManager);
+
+                    GlobalSystemMediaTransportControlsSessionMediaProperties mediaProperties = null;
+                    if (session == null)
                     {
-                        Artist = artist?.RemoveDiacritics() ?? string.Empty,
-                        Title = title?.RemoveDiacritics() ?? string.Empty,
+                        _logger.LogInformation("No media session found");
+                    }
+                    else
+                    {
+                        mediaProperties = await session
+                            .ControlSession?
+                            .TryGetMediaPropertiesAsync();
+                    }
+
+                    if (port == null || !port.IsOpen)
+                    {
+                        port = OpenPort();
+                        if (port == null)
+                        {
+                            await Task.Delay(5000, stoppingToken);
+                            continue;
+                        }
+                    }
+                    string artist = GetArtistName(mediaProperties);
+                    string title = mediaProperties?.Title;
+
+                    float cpu = (float)Math.Round(cpuCounter.NextValue());
+                    float usedRamInGigabytes = CalculateUsedRam(totalRamInGigabytes, availableRamCounter);
+
+                    var updateRequest = new UpdateRequest
+                    {
+                        Artist = artist?.RemoveDiacritics(),
+                        Title = title?.RemoveDiacritics(),
+                        UsedCPUPercent = cpu,
+                        UsedRAMGigabytes = usedRamInGigabytes,
+                        TotalRAMGigabytes = totalRamInGigabytesRounded,
                     };
-                    string request = JsonSerializer.Serialize(mediaRequest, _jsonSerializerOptions);
+                    string request = JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions);
                     port.WriteLine(request);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    _logger.LogWarning("Disconnected!");
+                    _logger.LogWarning(e, "Error, continuing...");
                 }
 
                 await Task.Delay(500, stoppingToken);
             }
+        }
+
+        private static float CalculateUsedRam(float totalRamInGigabytes, PerformanceCounter availableRamCounter)
+        {
+            float usedRamInGigabytes = totalRamInGigabytes - BytesToGigabytes(availableRamCounter.NextValue());
+            return (float)Math.Round(usedRamInGigabytes, 1);
+        }
+
+        private static float BytesToGigabytes(float bytes)
+        {
+            return bytes / 1024f / 1024f / 1024f;
         }
 
         private SerialPort OpenPort()
@@ -128,11 +154,11 @@ namespace PicoSidekick.Host
 
         private static string GetArtistName(GlobalSystemMediaTransportControlsSessionMediaProperties mediaProperties)
         {
-            if (!string.IsNullOrEmpty(mediaProperties.Artist))
+            if (!string.IsNullOrEmpty(mediaProperties?.Artist))
                 return mediaProperties.Artist;
 
             // for podcasts
-            return mediaProperties.AlbumTitle;
+            return mediaProperties?.AlbumTitle;
         }
     }
 }
