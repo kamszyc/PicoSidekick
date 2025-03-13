@@ -82,6 +82,7 @@ namespace PicoSidekick.Host
 
                     var updateRequest = new UpdateRequest
                     {
+                        Time = DateTime.Now.ToShortTimeString(),
                         Artist = artist?.RemoveDiacritics(),
                         Title = title?.RemoveDiacritics(),
                         UsedCPUPercent = cpu,

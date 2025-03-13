@@ -8,6 +8,7 @@ namespace PicoSidekick.Host
 {
     public class UpdateRequest
     {
+        public string Time { get; set; }
         public string Artist { get; set; }
         public string Title { get; set; }
         public float UsedCPUPercent { get; set; }
