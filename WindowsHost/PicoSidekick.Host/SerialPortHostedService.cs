@@ -39,7 +39,7 @@ namespace PicoSidekick.Host
 
             await _trayIconFactory.CreateTrayIcon();
 
-            ComputerInfo computerInfo = new ComputerInfo();
+            var computerInfo = new ComputerInfo();
 
             float totalRamInGigabytes = BytesToGigabytes(computerInfo.TotalPhysicalMemory);
             float totalRamInGigabytesRounded = (float)Math.Round(totalRamInGigabytes, 1);
