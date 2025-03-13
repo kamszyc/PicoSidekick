@@ -152,8 +152,11 @@ async def render_display(play_button):
     display_bus = displayio.FourWire(
         tft_spi, command=tft_dc, chip_select=tft_cs, reset=tft_res)
 
-    display = adafruit_ili9341.ILI9341(display_bus,
-                        width=TFT_WIDTH, height=TFT_HEIGHT)
+    display = adafruit_ili9341.ILI9341(
+        display_bus,
+        width=TFT_WIDTH,
+        height=TFT_HEIGHT,
+        auto_refresh=False)
 
     splash = displayio.Group()
     display.root_group = splash
