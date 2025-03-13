@@ -169,7 +169,7 @@ async def render_display(play_button):
     text_group = displayio.Group(scale=2, x=10, y=10)
 
     time_label = label.Label(terminalio.FONT, text=IDLE_TIME, scale=2)
-    time_label.x = 50
+    time_label.x = 45
     time_label.y = 10
     text_group.append(time_label)
 
