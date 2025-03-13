@@ -1,5 +1,5 @@
 import usb_hid
-import usb_cdc # type: ignore
+import usb_cdc
 from adafruit_hid.consumer_control import ConsumerControl
 from adafruit_hid.consumer_control_code import ConsumerControlCode
 import time
