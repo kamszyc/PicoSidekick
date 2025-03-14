@@ -4,6 +4,8 @@
 
 DIY helper screen for Windows PC.
 
+![Sidekick photo](sidekick.jpg)
+
 Built with:
 - Raspberry Pi Pico
 - cheap 2.8" TFT touch screen, with ILI9341 and XPT2046 controllers and 240x320 resolution
