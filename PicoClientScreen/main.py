@@ -203,7 +203,10 @@ async def render_display(play_button):
                         if request_artist_val is None and request_title_val is None:
                             music_label.text = IDLE_MUSIC
                         else:
-                            music_val = request_artist_val + " - " + request_title_val
+                            if not request_artist_val:
+                                music_val = request_title_val
+                            else:
+                                music_val = request_artist_val + " - " + request_title_val
                             if music_label.text.strip() != music_val:
                                 music_label.text = music_val
 
