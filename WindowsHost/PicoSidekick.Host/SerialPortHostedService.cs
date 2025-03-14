@@ -43,7 +43,7 @@ namespace PicoSidekick.Host
 
             float totalRamInGigabytes = BytesToGigabytes(computerInfo.TotalPhysicalMemory);
             float totalRamInGigabytesRounded = (float)Math.Round(totalRamInGigabytes, 1);
-            var cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            var cpuCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total");
             var availableRamCounter = new PerformanceCounter("Memory", "Available Bytes");
 
             SerialPort port = null;
