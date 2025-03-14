@@ -2,7 +2,28 @@
 
 ![Build Host](https://github.com/kamszyc/PicoSidekick/actions/workflows/build-and-release-host.yml/badge.svg)
 
-### Installation on Raspberry Pi Pico
+DIY helper screen for Windows PC.
+
+Built with:
+- Raspberry Pi Pico
+- cheap 2.8" TFT touch screen, with ILI9341 and XPT2046 controllers and 240x320 resolution
+
+Software components:
+- CircuitPython software on Pico
+- Windows PC host built with C#/.NET 9
+
+Components are connected using virtual serial port via USB
+
+## Function roadmap
+- [x] Clock
+- [x] Currently played music/other media
+- [x] CPU and RAM usage
+- [x] Play/Pause button
+- [ ] Volume up/down button
+- [ ] Shutdown computer button
+- [ ] TFT screen brightness adjustment
+
+## Installation on Raspberry Pi Pico
 1. Install CircuitPython on Raspberry Pi Pico \
 https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython
 2. Connect Pico to USB port, `CIRCUITPY` drive should appear
@@ -12,5 +33,5 @@ https://github.com/adafruit/circup \
 4. Remove preinstalled `code.py` file and put files from `PicoClientScreen` directory into `CIRCUITPY` drive
 5. Disconnect Pico from USB and connect it again
 
-### References:
+## References:
 1. https://helloraspberrypi.blogspot.com/2021/04/raspberry-pi-picocircuitpython-ili9341.html
