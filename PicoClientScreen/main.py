@@ -210,6 +210,8 @@ async def render_display(play_button):
                             if music_label.text.strip() != music_val:
                                 music_label.text = music_val
 
+                        music_label.x = int(150 / 2 - music_label.width / 2)
+
                         cpu_label_value = "CPU: " + str(request["usedCPUPercent"]) + "%"
                         if cpu_label.text.strip() != cpu_label_value:
                             cpu_label.text = cpu_label_value
@@ -222,7 +224,7 @@ async def render_display(play_button):
                     except ValueError:
                         pass
             except Exception as e:
-                print("error")
+                print(e)
             iterations_without_update = 0
         else:
             iterations_without_update = iterations_without_update + 1
