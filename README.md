@@ -1,3 +1,5 @@
+# Pico Sidekick
+
 ![Build Host](https://github.com/kamszyc/PicoSidekick/actions/workflows/build-and-release-host.yml/badge.svg)
 
 ### Installation on Raspberry Pi Pico
