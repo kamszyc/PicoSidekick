@@ -1,4 +1,4 @@
-name: Build Host (.NET 9)
+name: Build and Release Host (.NET 9)
 
 on:
   push:

@@ -21,8 +21,8 @@ Components are connected using USB CDC serial port
 - [x] Currently played music/other media
 - [x] CPU and RAM usage
 - [x] Play/Pause button
+- [x] Shutdown computer button
 - [ ] Volume up/down button
-- [ ] Shutdown computer button
 - [ ] TFT screen brightness adjustment
 
 ## Installation on Raspberry Pi Pico

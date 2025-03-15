@@ -16,6 +16,7 @@ from adafruit_display_text import label, scrolling_label
 import adafruit_ili9341
 from xpt2046 import Touch
 from adafruit_button import Button
+from adafruit_display_shapes.rect import Rect
 
 TFT_WIDTH = const(320)
 TFT_HEIGHT = const(240)
@@ -113,7 +114,7 @@ class TouchContext:
         return (normalizedX, normalizedY)
     
 
-async def handle_touch(touch_context, play_button):
+async def handle_touch(touch_context, play_button, shutdown_button):
     cc = ConsumerControl(usb_hid.devices)
     while True:
         curTick = time.monotonic()
@@ -132,13 +133,17 @@ async def handle_touch(touch_context, play_button):
                 if play_button.contains((touch_context.touchedY, touch_context.touchedX)):
                     print('play/pause')
                     cc.send(ConsumerControlCode.PLAY_PAUSE)
+                    
+                if shutdown_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                    print('shutdown')
+                    usb_cdc.data.write(json.dumps({'command':'shutdown'}) + '\n')
                 
             touch_context.touchEvent = EVT_NO
 
         await asyncio.sleep(0)
 
 
-async def render_display(play_button):
+async def render_display(play_button, shutdown_button):
     displayio.release_displays()
 
     tft_spi_clk = board.GP6
@@ -173,20 +178,27 @@ async def render_display(play_button):
     time_label.y = 10
     text_group.append(time_label)
 
-    music_label = scrolling_label.ScrollingLabel(terminalio.FONT, text=IDLE_MUSIC, max_characters = 25, animate_time=0.5)
+    music_label = scrolling_label.ScrollingLabel(terminalio.FONT, text=IDLE_MUSIC, max_characters=25, animate_time=0.5, color=0x0)
     music_label.y = 30
     text_group.append(music_label) 
 
-    cpu_label = label.Label(terminalio.FONT, text=IDLE_CPU)
+    cpu_label = label.Label(terminalio.FONT, text=IDLE_CPU, color=0xFFFFFF)
     cpu_label.y = 80
     text_group.append(cpu_label)
 
-    ram_label = label.Label(terminalio.FONT, text=IDLE_RAM)
+    ram_label = label.Label(terminalio.FONT, text=IDLE_RAM, color=0xFFFFFF)
     ram_label.y = 100
     text_group.append(ram_label)
+    
+    rect1 = Rect(0, 0, 320, 55, fill=0x0000FF)
+    splash.append(rect1)
+    
+    rect2 = Rect(0, 55, 320, 100, fill=0xFFFFFF)
+    splash.append(rect2)
 
     splash.append(text_group)
     splash.append(play_button)
+    splash.append(shutdown_button)
 
     iterations_without_update = 0
     while True:
@@ -241,35 +253,31 @@ async def render_display(play_button):
 
         await asyncio.sleep(0.1)
 
-def create_play_button():
-    BUTTON_X = 135
-    BUTTON_Y = 95
-    BUTTON_WIDTH = 50
+def create_button(x, y, label):
+    BUTTON_WIDTH = 70
     BUTTON_HEIGHT = 50
     BUTTON_STYLE = Button.RECT
-    BUTTON_FILL_COLOR = 0x00FFFF
-    BUTTON_OUTLINE_COLOR = 0xFF00FF
-    BUTTON_LABEL = "PLAY"
+    BUTTON_FILL_COLOR = 0xCCCCCC
     BUTTON_LABEL_COLOR = 0x000000
 
     return Button(
-        x=BUTTON_X,
-        y=BUTTON_Y,
+        x=x,
+        y=y,
         width=BUTTON_WIDTH,
         height=BUTTON_HEIGHT,
         style=BUTTON_STYLE,
         fill_color=BUTTON_FILL_COLOR,
-        outline_color=BUTTON_OUTLINE_COLOR,
-        label=BUTTON_LABEL,
+        label=label,
         label_font=terminalio.FONT,
         label_color=BUTTON_LABEL_COLOR,
     )
 
 async def main():
     touch_context = TouchContext()
-    play_button = create_play_button()
-    handle_touch_task = asyncio.create_task(handle_touch(touch_context, play_button))
-    render_display_task = asyncio.create_task(render_display(play_button))
+    play_button = create_button(125, 95, "PLAY")
+    shutdown_button = create_button(240, 165, "SHUTDOWN")
+    handle_touch_task = asyncio.create_task(handle_touch(touch_context, play_button, shutdown_button))
+    render_display_task = asyncio.create_task(render_display(play_button, shutdown_button))
     await asyncio.gather(handle_touch_task, render_display_task)
 
 asyncio.run(main())

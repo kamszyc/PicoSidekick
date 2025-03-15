@@ -91,6 +91,8 @@ namespace PicoSidekick.Host
                     };
                     string request = JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions);
                     port.WriteLine(request);
+
+                    HandleCommands(port);
                 }
                 catch (Exception e)
                 {
@@ -98,6 +100,22 @@ namespace PicoSidekick.Host
                 }
 
                 await Task.Delay(500, stoppingToken);
+            }
+        }
+
+        private void HandleCommands(SerialPort port)
+        {
+            if (port.BytesToRead > 0)
+            {
+                string commandJson = port.ReadLine();
+                ScreenCommand command = JsonSerializer.Deserialize<ScreenCommand>(commandJson, _jsonSerializerOptions);
+                if (command.IsShutdown())
+                {
+                    var psi = new ProcessStartInfo("shutdown", "/s /t 0");
+                    psi.CreateNoWindow = true;
+                    psi.UseShellExecute = false;
+                    Process.Start(psi);
+                }
             }
         }
 
