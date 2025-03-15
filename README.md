@@ -14,7 +14,7 @@ Software components:
 - CircuitPython software on Pico
 - Windows PC host built with C#/.NET 9
 
-Components are connected using virtual serial port via USB
+Components are connected using USB CDC serial port
 
 ## Function roadmap
 - [x] Clock
