@@ -1,3 +1,4 @@
+import microcontroller
 import usb_hid
 from constants import TFT_HEIGHT, TFT_WIDTH
 from touch_context import TouchContext, EVT_NO, EVT_PenDown, EVT_PenUp
@@ -19,7 +20,7 @@ from adafruit_display_shapes.rect import Rect
 SHUTDOWN_BUTTON_TEXT = "SHUTDOWN"
 CONFIRMATION_TEXT = "SURE?"
 
-async def handle_touch(touch_context, play_button, shutdown_button):
+async def handle_touch(touch_context, play_button, shutdown_button, devmode_button):
     cc = ConsumerControl(usb_hid.devices)
     shutdown_pressed = False
     while True:
@@ -35,6 +36,11 @@ async def handle_touch(touch_context, play_button, shutdown_button):
 
             if touch_context.touchEvent == EVT_PenUp:
                 print('ev PenUp - ')
+
+                if devmode_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                    print('devmode on/off')
+                    microcontroller.nvm[0] = int(not microcontroller.nvm[0])
+                    microcontroller.reset()
                 
                 if play_button.contains((touch_context.touchedY, touch_context.touchedX)):
                     print('play/pause')
@@ -58,7 +64,7 @@ async def handle_touch(touch_context, play_button, shutdown_button):
         await asyncio.sleep(0)
 
 
-async def render_display(play_button, shutdown_button):
+async def render_display(play_button, shutdown_button, devmode_button):
     displayio.release_displays()
 
     tft_spi_clk = board.GP6
@@ -114,6 +120,7 @@ async def render_display(play_button, shutdown_button):
     splash.append(text_group)
     splash.append(play_button)
     splash.append(shutdown_button)
+    splash.append(devmode_button)
 
     iterations_without_update = 0
     while True:
@@ -185,10 +192,15 @@ def create_button(x, y, label):
 
 async def main():
     touch_context = TouchContext()
+    
     play_button = create_button(125, 95, "PLAY")
     shutdown_button = create_button(240, 180, SHUTDOWN_BUTTON_TEXT)
-    handle_touch_task = asyncio.create_task(handle_touch(touch_context, play_button, shutdown_button))
-    render_display_task = asyncio.create_task(render_display(play_button, shutdown_button))
+
+    devmode_text = "DEVMODE OFF" if microcontroller.nvm[0] == 1 else "DEVMODE ON"
+    devmode_button = create_button(10, 2, devmode_text)
+
+    handle_touch_task = asyncio.create_task(handle_touch(touch_context, play_button, shutdown_button, devmode_button))
+    render_display_task = asyncio.create_task(render_display(play_button, shutdown_button, devmode_button))
     await asyncio.gather(handle_touch_task, render_display_task)
 
 asyncio.run(main())
