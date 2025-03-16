@@ -1,3 +1,4 @@
+from devmode import devmode_enabled, toggle_devmode
 import microcontroller
 import usb_hid
 from constants import TFT_HEIGHT, TFT_WIDTH
@@ -39,7 +40,7 @@ async def handle_touch(touch_context, play_button, shutdown_button, devmode_butt
 
                 if devmode_button.contains((touch_context.touchedY, touch_context.touchedX)):
                     print('devmode on/off')
-                    microcontroller.nvm[0] = int(not microcontroller.nvm[0])
+                    toggle_devmode()
                     microcontroller.reset()
                 
                 if play_button.contains((touch_context.touchedY, touch_context.touchedX)):
@@ -196,7 +197,7 @@ async def main():
     play_button = create_button(125, 95, "PLAY")
     shutdown_button = create_button(240, 180, SHUTDOWN_BUTTON_TEXT)
 
-    devmode_text = "DEVMODE OFF" if microcontroller.nvm[0] == 1 else "DEVMODE ON"
+    devmode_text = "DEVMODE OFF" if devmode_enabled() else "DEVMODE ON"
     devmode_button = create_button(10, 2, devmode_text)
 
     handle_touch_task = asyncio.create_task(handle_touch(touch_context, play_button, shutdown_button, devmode_button))
