@@ -107,36 +107,32 @@ async def render_display(play_button, shutdown_button):
         if usb_cdc.data.in_waiting > 0:
             try:
                 data_in = usb_cdc.data.readline()
-                if data_in:
-                    try:
-                        request = json.loads(data_in)
+                request = json.loads(data_in)
 
-                        request_artist_val = request["artist"]
-                        request_title_val = request["title"]
+                request_artist_val = request["artist"]
+                request_title_val = request["title"]
 
-                        if request_artist_val is None and request_title_val is None:
-                            music_label.text = IDLE_MUSIC
-                        else:
-                            if not request_artist_val:
-                                music_val = request_title_val
-                            else:
-                                music_val = request_artist_val + " - " + request_title_val
-                            if music_label.text.strip() != music_val:
-                                music_label.text = music_val
+                if request_artist_val is None and request_title_val is None:
+                    music_label.text = IDLE_MUSIC
+                else:
+                    if not request_artist_val:
+                        music_val = request_title_val
+                    else:
+                        music_val = request_artist_val + " - " + request_title_val
+                    if music_label.text.strip() != music_val:
+                        music_label.text = music_val
 
-                        music_label.x = int(150 / 2 - music_label.width / 2)
+                music_label.x = int(150 / 2 - music_label.width / 2)
 
-                        cpu_label_value = "CPU: " + str(request["usedCPUPercent"]) + "%"
-                        if cpu_label.text.strip() != cpu_label_value:
-                            cpu_label.text = cpu_label_value
+                cpu_label_value = "CPU: " + str(request["usedCPUPercent"]) + "%"
+                if cpu_label.text.strip() != cpu_label_value:
+                    cpu_label.text = cpu_label_value
 
-                        ram_label_value = "RAM: " + str(request["usedRAMGigabytes"]) + "/" + str(request["totalRAMGigabytes"]) + "GB"
-                        if ram_label.text.strip() != ram_label_value:
-                            ram_label.text = ram_label_value
+                ram_label_value = "RAM: " + str(request["usedRAMGigabytes"]) + "/" + str(request["totalRAMGigabytes"]) + "GB"
+                if ram_label.text.strip() != ram_label_value:
+                    ram_label.text = ram_label_value
 
-                        time_label.text = request["time"]
-                    except ValueError:
-                        pass
+                time_label.text = request["time"]
             except Exception as e:
                 print(e)
             iterations_without_update = 0
