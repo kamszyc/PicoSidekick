@@ -16,8 +16,12 @@ import adafruit_ili9341
 from adafruit_button import Button
 from adafruit_display_shapes.rect import Rect
 
+SHUTDOWN_BUTTON_TEXT = "SHUTDOWN"
+CONFIRMATION_TEXT = "SURE?"
+
 async def handle_touch(touch_context, play_button, shutdown_button):
     cc = ConsumerControl(usb_hid.devices)
+    shutdown_pressed = False
     while True:
         curTick = time.monotonic()
         if curTick >= touch_context.NxTick:
@@ -38,7 +42,16 @@ async def handle_touch(touch_context, play_button, shutdown_button):
                     
                 if shutdown_button.contains((touch_context.touchedY, touch_context.touchedX)):
                     print('shutdown')
-                    usb_cdc.data.write(json.dumps({'command':'shutdown'}) + '\n')
+                    if not shutdown_pressed:
+                        shutdown_button.label = CONFIRMATION_TEXT
+                        shutdown_pressed = True
+                    else:
+                        shutdown_button.label = SHUTDOWN_BUTTON_TEXT
+                        usb_cdc.data.write(json.dumps({'command':'shutdown'}) + '\n')
+                        shutdown_pressed = False
+                else:
+                    shutdown_button.label = SHUTDOWN_BUTTON_TEXT
+                    shutdown_pressed = False
                 
             touch_context.touchEvent = EVT_NO
 
@@ -85,11 +98,11 @@ async def render_display(play_button, shutdown_button):
     text_group.append(music_label) 
 
     cpu_label = label.Label(terminalio.FONT, text=IDLE_CPU, color=0xFFFFFF)
-    cpu_label.y = 80
+    cpu_label.y = 90
     text_group.append(cpu_label)
 
     ram_label = label.Label(terminalio.FONT, text=IDLE_RAM, color=0xFFFFFF)
-    ram_label.y = 100
+    ram_label.y = 105
     text_group.append(ram_label)
     
     rect1 = Rect(0, 0, 320, 55, fill=0x0000FF)
@@ -173,7 +186,7 @@ def create_button(x, y, label):
 async def main():
     touch_context = TouchContext()
     play_button = create_button(125, 95, "PLAY")
-    shutdown_button = create_button(240, 165, "SHUTDOWN")
+    shutdown_button = create_button(240, 180, SHUTDOWN_BUTTON_TEXT)
     handle_touch_task = asyncio.create_task(handle_touch(touch_context, play_button, shutdown_button))
     render_display_task = asyncio.create_task(render_display(play_button, shutdown_button))
     await asyncio.gather(handle_touch_task, render_display_task)
