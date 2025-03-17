@@ -55,4 +55,4 @@ jobs:
         name: "Release ${{ github.ref_name }}"
         files: PicoSidekickHost.zip
         draft: false
-        prerelease: true
+        prerelease: false
