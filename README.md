@@ -1,6 +1,6 @@
 # Pico Sidekick
 
-![Build Host](https://github.com/kamszyc/PicoSidekick/actions/workflows/build-and-release-host.yml/badge.svg)
+![Build Host](https://github.com/kamszyc/PicoSidekick/actions/workflows/build-host-and-release.yml/badge.svg)
 
 DIY helper screen for Windows PC.
 
