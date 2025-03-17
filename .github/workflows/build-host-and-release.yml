@@ -1,11 +1,9 @@
-name: Build and Release Host (.NET 9)
+name: Build Host and Release
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'WindowsHost/**'
+    tags:
+    - '*'
 
 jobs:
   build:
@@ -29,7 +27,6 @@ jobs:
     - name: Publish build output
       run: dotnet publish WindowsHost/PicoSidekick.Host/PicoSidekick.Host.csproj --configuration Release --output ./publish /p:RuntimeIdentifier=win-x64 /p:SelfContained=true /p:PublishSingleFile=true
     
-    # Archive the published output to be used as an artifact
     - name: Archive build output
       uses: actions/upload-artifact@v4
       with:
@@ -40,27 +37,22 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Ensure the token has write access to repository contents
+      contents: write 
     steps:
     - name: Download build output
       uses: actions/download-artifact@v4
       with:
         name: PicoSidekickHost
         
-    - name: Set short SHA
-      run: echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> $GITHUB_ENV  # Shorten SHA to 7 characters
-
     - name: Zip build output
       run: zip PicoSidekickHost.zip . -r
     
-    # Create a GitHub release using the commit ID as the tag
     - name: Create GitHub Release
       id: create_release
       uses: softprops/action-gh-release@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: ${{ env.SHORT_SHA }}  # Use the commit ID (SHA) as the release tag
-        name: "Release ${{ env.SHORT_SHA }}"
+        name: "Release ${{ github.ref_name }}"
         files: PicoSidekickHost.zip
         draft: false
         prerelease: true
