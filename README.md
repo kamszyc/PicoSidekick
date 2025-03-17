@@ -26,6 +26,13 @@ Components are connected using USB CDC serial port
 - [ ] TFT screen brightness adjustment
 
 ## Installation on Raspberry Pi Pico
+
+### From released uf2 file
+1. Get `.uf2` file from ![last release](https://github.com/kamszyc/PicoSidekick/releases/latest)
+2. Hold `BOOTSEL` button and connect Pi to PC
+3. Put `.uf2` file on `RPI-RP2` drive
+
+### From scratch
 1. Install CircuitPython on Raspberry Pi Pico \
 https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython
 2. Connect Pico to USB port, `CIRCUITPY` drive should appear
