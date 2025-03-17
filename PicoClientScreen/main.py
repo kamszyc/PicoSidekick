@@ -17,6 +17,7 @@ from adafruit_display_text import label, scrolling_label
 import adafruit_ili9341
 from adafruit_button import Button
 from adafruit_display_shapes.rect import Rect
+from adafruit_displayio_layout.layouts.page_layout import PageLayout
 
 SHUTDOWN_BUTTON_TEXT = "SHUTDOWN"
 CONFIRMATION_TEXT = "SURE?"
@@ -64,6 +65,14 @@ async def handle_touch(touch_context, play_button, shutdown_button, devmode_butt
 
         await asyncio.sleep(0)
 
+def create_idle_page():
+    idle_page_group = displayio.Group()
+
+    lbl1 = label.Label(terminalio.FONT, text="Connecting...", scale=2)
+    lbl1.x = 80
+    lbl1.y = 110
+    idle_page_group.append(lbl1)
+    return idle_page_group
 
 async def render_display(play_button, shutdown_button, devmode_button):
     displayio.release_displays()
@@ -85,43 +94,49 @@ async def render_display(play_button, shutdown_button, devmode_button):
         height=TFT_HEIGHT,
         auto_refresh=False)
 
-    splash = displayio.Group()
-    display.root_group = splash
+    root = displayio.Group()
+    display.root_group = root
+    
+    page_layout = PageLayout(x=0, y=0)
+    root.append(page_layout)
 
-    IDLE_TIME = "xx:xx"
+    main_group = displayio.Group()
+    idle_group = create_idle_page()
+    page_layout.add_content(idle_group, "idle_page")
+    page_layout.add_content(main_group, "main_page")
+
     IDLE_MUSIC = "Play some music!"
-    IDLE_CPU = "CPU: unknown"
-    IDLE_RAM = "RAM: unknown"
 
     text_group = displayio.Group(scale=2, x=10, y=10)
 
-    time_label = label.Label(terminalio.FONT, text=IDLE_TIME, scale=2)
+    time_label = label.Label(terminalio.FONT, text="xx:xx", scale=2)
     time_label.x = 45
     time_label.y = 10
     text_group.append(time_label)
 
     music_label = scrolling_label.ScrollingLabel(terminalio.FONT, text=IDLE_MUSIC, max_characters=25, animate_time=0.5, color=0x0)
+    music_label.x = 25
     music_label.y = 30
     text_group.append(music_label) 
 
-    cpu_label = label.Label(terminalio.FONT, text=IDLE_CPU, color=0xFFFFFF)
+    cpu_label = label.Label(terminalio.FONT, text="CPU: unknown", color=0xFFFFFF)
     cpu_label.y = 90
     text_group.append(cpu_label)
 
-    ram_label = label.Label(terminalio.FONT, text=IDLE_RAM, color=0xFFFFFF)
+    ram_label = label.Label(terminalio.FONT, text="RAM: unknown", color=0xFFFFFF)
     ram_label.y = 105
     text_group.append(ram_label)
     
     rect1 = Rect(0, 0, 320, 55, fill=0x0000FF)
-    splash.append(rect1)
+    main_group.append(rect1)
     
     rect2 = Rect(0, 55, 320, 100, fill=0xFFFFFF)
-    splash.append(rect2)
+    main_group.append(rect2)
 
-    splash.append(text_group)
-    splash.append(play_button)
-    splash.append(shutdown_button)
-    splash.append(devmode_button)
+    main_group.append(text_group)
+    main_group.append(play_button)
+    main_group.append(shutdown_button)
+    main_group.append(devmode_button)
 
     iterations_without_update = 0
     while True:
@@ -154,16 +169,15 @@ async def render_display(play_button, shutdown_button, devmode_button):
                     ram_label.text = ram_label_value
 
                 time_label.text = request["time"]
+
+                page_layout.show_page("main_page")
             except Exception as e:
                 print(e)
             iterations_without_update = 0
         else:
             iterations_without_update = iterations_without_update + 1
             if iterations_without_update == 10:
-                music_label.text = IDLE_MUSIC
-                cpu_label.text = IDLE_CPU
-                ram_label.text = IDLE_RAM
-                time_label.text = IDLE_TIME
+                page_layout.show_page("idle_page")
                 iterations_without_update = 0
 
         music_label.update()
@@ -173,22 +187,16 @@ async def render_display(play_button, shutdown_button, devmode_button):
         await asyncio.sleep(0.1)
 
 def create_button(x, y, label):
-    BUTTON_WIDTH = 70
-    BUTTON_HEIGHT = 50
-    BUTTON_STYLE = Button.RECT
-    BUTTON_FILL_COLOR = 0xCCCCCC
-    BUTTON_LABEL_COLOR = 0x000000
-
     return Button(
         x=x,
         y=y,
-        width=BUTTON_WIDTH,
-        height=BUTTON_HEIGHT,
-        style=BUTTON_STYLE,
-        fill_color=BUTTON_FILL_COLOR,
+        width=70,
+        height=50,
+        style=Button.RECT,
+        fill_color=0xCCCCCC,
         label=label,
         label_font=terminalio.FONT,
-        label_color=BUTTON_LABEL_COLOR,
+        label_color=0x000000,
     )
 
 async def main():
