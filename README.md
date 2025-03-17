@@ -16,7 +16,7 @@ Software components:
 
 Components are connected using USB CDC serial port
 
-## Function roadmap
+## Feature roadmap
 - [x] Clock
 - [x] Currently played music/other media
 - [x] CPU and RAM usage
