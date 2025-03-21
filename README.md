@@ -28,7 +28,7 @@ Components are connected using USB CDC serial port
 ## Installation on Raspberry Pi Pico
 
 ### From released uf2 file
-1. Get `.uf2` file from ![latest release](https://github.com/kamszyc/PicoSidekick/releases/latest)
+1. Get `.uf2` file from [latest release](https://github.com/kamszyc/PicoSidekick/releases/latest)
 2. Hold `BOOTSEL` button and connect Pi to PC
 3. Put `.uf2` file on `RPI-RP2` drive
 
