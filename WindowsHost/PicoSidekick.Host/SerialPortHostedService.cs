@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic.Devices;
+using PicoSidekick.Host.Media;
+using PicoSidekick.Host.Models;
 using PicoSidekick.Host.Performance;
 using System;
 using System.Collections.Generic;
@@ -18,17 +20,17 @@ namespace PicoSidekick.Host
 {
     public class SerialPortHostedService : BackgroundService
     {
-        private readonly TrayIconFactory _trayIconFactory;
+        private readonly MediaService _mediaService;
         private readonly PerformanceService _performanceService;
         private readonly ILogger<SerialPortHostedService> _logger;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public SerialPortHostedService(
-            TrayIconFactory trayIconFactory,
+            MediaService mediaService,
             PerformanceService performanceService,
             ILogger<SerialPortHostedService> logger)
         {
-            _trayIconFactory = trayIconFactory;
+            _mediaService = mediaService;
             _performanceService = performanceService;
             _logger = logger;
             _jsonSerializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -38,29 +40,11 @@ namespace PicoSidekick.Host
         {
             _logger.LogInformation("Initializing...");
 
-            var mediaManager = new MediaManager();
-            await mediaManager.StartAsync();
-
-            await _trayIconFactory.CreateTrayIcon();
-
             SerialPort port = null;
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    var session = GetSession(mediaManager);
-
-                    GlobalSystemMediaTransportControlsSessionMediaProperties mediaProperties = null;
-                    if (session == null)
-                    {
-                        _logger.LogInformation("No media session found");
-                    }
-                    else
-                    {
-                        mediaProperties = await session
-                            .ControlSession?
-                            .TryGetMediaPropertiesAsync();
-                    }
 
                     if (port == null || !port.IsOpen)
                     {
@@ -71,16 +55,16 @@ namespace PicoSidekick.Host
                             continue;
                         }
                     }
-                    string artist = GetArtistName(mediaProperties);
-                    string title = mediaProperties?.Title;
 
                     var perfReading = _performanceService.Read();
+                    var mediaReading = await _mediaService.Read();
 
                     var updateRequest = new UpdateRequest
                     {
+                        Artist = mediaReading.Artist,
+                        Title = mediaReading.Title,
+                        IsPlaying = mediaReading.IsPlaying,
                         Time = DateTime.Now.ToShortTimeString(),
-                        Artist = artist?.RemoveDiacritics(),
-                        Title = title?.RemoveDiacritics(),
                         UsedCPUPercent = perfReading.Cpu,
                         UsedRAMGigabytes = perfReading.UsedRamInGigabytes,
                         TotalRAMGigabytes = _performanceService.TotalRamInGigabytes,
@@ -132,37 +116,6 @@ namespace PicoSidekick.Host
 
             _logger.LogInformation("Connected!");
             return port;
-        }
-
-        private static MediaManager.MediaSession GetSession(MediaManager mediaManager)
-        {
-            const string SpotifyPrefix = "Spotify";
-            var spotifyMediaSession = mediaManager.CurrentMediaSessions.FirstOrDefault(s => s.Key.StartsWith(SpotifyPrefix)).Value;
-            if (spotifyMediaSession != null && IsSessionPlaying(spotifyMediaSession))
-            {
-                return spotifyMediaSession;
-            }
-            var firstPlayingMediaSession = mediaManager.CurrentMediaSessions.FirstOrDefault(s => IsSessionPlaying(s.Value)).Value;
-            if (firstPlayingMediaSession != null)
-            {
-                return firstPlayingMediaSession;
-            }
-
-            return mediaManager.CurrentMediaSessions.FirstOrDefault().Value;
-        }
-
-        private static bool IsSessionPlaying(MediaManager.MediaSession spotifyMediaSession)
-        {
-            return spotifyMediaSession.ControlSession.GetPlaybackInfo().PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing;
-        }
-
-        private static string GetArtistName(GlobalSystemMediaTransportControlsSessionMediaProperties mediaProperties)
-        {
-            if (!string.IsNullOrEmpty(mediaProperties?.Artist))
-                return mediaProperties.Artist;
-
-            // for podcasts
-            return mediaProperties?.AlbumTitle;
         }
     }
 }

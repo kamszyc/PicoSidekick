@@ -1,6 +1,7 @@
 ﻿using Diacritics.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PicoSidekick.Host.Media;
 using PicoSidekick.Host.Performance;
 using System.IO.Ports;
 using System.Management;
@@ -18,10 +19,10 @@ namespace PicoSidekick.Host
         private static void Main(string[] args)
         {
             var builder = Microsoft.Extensions.Hosting.Host.CreateApplicationBuilder(args);
-            builder.Services.AddWindowsFormsLifetime<ApplicationContext>(preApplicationRunAction: serviceProvider => Application.SetColorMode(SystemColorMode.System));
+            builder.Services.AddWindowsFormsLifetime<SidekickApplicationContext>(preApplicationRunAction: serviceProvider => Application.SetColorMode(SystemColorMode.System));
             builder.Services.AddHostedService<SerialPortHostedService>();
-            builder.Services.AddTransient<TrayIconFactory>();
-            builder.Services.AddTransient<PerformanceService>();
+            builder.Services.AddSingleton<PerformanceService>();
+            builder.Services.AddSingleton<MediaService>();
 
             var app = builder.Build();
             app.Run();

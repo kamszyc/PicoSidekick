@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PicoSidekick.Host
+namespace PicoSidekick.Host.Models
 {
     public class ScreenCommand
     {
