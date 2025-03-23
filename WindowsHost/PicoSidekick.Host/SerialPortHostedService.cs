@@ -59,17 +59,7 @@ namespace PicoSidekick.Host
                     var perfReading = _performanceService.Read();
                     var mediaReading = await _mediaService.Read();
 
-                    var updateRequest = new UpdateRequest
-                    {
-                        Artist = mediaReading.Artist,
-                        Title = mediaReading.Title,
-                        IsMediaActive = mediaReading.IsMediaActive,
-                        IsPlaying = mediaReading.IsPlaying,
-                        Time = DateTime.Now.ToShortTimeString(),
-                        UsedCPUPercent = perfReading.Cpu,
-                        UsedRAMGigabytes = perfReading.UsedRamInGigabytes,
-                        TotalRAMGigabytes = _performanceService.TotalRamInGigabytes,
-                    };
+                    UpdateRequest updateRequest = CreateUpdateRequest(perfReading, mediaReading);
                     string request = JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions);
                     port.WriteLine(request);
 
@@ -84,6 +74,21 @@ namespace PicoSidekick.Host
             }
         }
 
+        private UpdateRequest CreateUpdateRequest(PerformanceReading perfReading, MediaReading mediaReading)
+        {
+            return new UpdateRequest
+            {
+                Artist = mediaReading.Artist,
+                Title = mediaReading.Title,
+                IsMediaActive = mediaReading.IsMediaActive,
+                IsPlaying = mediaReading.IsPlaying,
+                Time = DateTime.Now.ToShortTimeString(),
+                UsedCPUPercent = perfReading.Cpu,
+                UsedRAMGigabytes = perfReading.UsedRamInGigabytes,
+                TotalRAMGigabytes = _performanceService.TotalRamInGigabytes,
+            };
+        }
+
         private void HandleCommands(SerialPort port)
         {
             if (port.BytesToRead > 0)
@@ -92,9 +97,11 @@ namespace PicoSidekick.Host
                 ScreenCommand command = JsonSerializer.Deserialize<ScreenCommand>(commandJson, _jsonSerializerOptions);
                 if (command.IsShutdown())
                 {
-                    var psi = new ProcessStartInfo("shutdown", "/s /t 0");
-                    psi.CreateNoWindow = true;
-                    psi.UseShellExecute = false;
+                    var psi = new ProcessStartInfo("shutdown", "/s /hybrid /t 5")
+                    {
+                        CreateNoWindow = true,
+                        UseShellExecute = false
+                    };
                     Process.Start(psi);
                 }
             }
