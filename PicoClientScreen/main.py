@@ -21,6 +21,8 @@ from adafruit_displayio_layout.layouts.page_layout import PageLayout
 
 SHUTDOWN_BUTTON_TEXT = "SHUTDOWN"
 CONFIRMATION_TEXT = "SURE?"
+PLAY_TEXT = "PLAY"
+PAUSE_TEXT = "PAUSE"
 
 async def handle_touch(touch_context, page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button):
     cc = ConsumerControl(usb_hid.devices)
@@ -39,7 +41,7 @@ async def handle_touch(touch_context, page_layout, play_button, shutdown_button,
             if touch_context.touchEvent == EVT_PenUp:
                 print('ev PenUp - ')
 
-                if devmode_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                if page_layout.showing_page_name == "settings_page" and devmode_button.contains((touch_context.touchedY, touch_context.touchedX)):
                     print('devmode on/off')
                     toggle_devmode()
                     microcontroller.reset()
@@ -52,11 +54,11 @@ async def handle_touch(touch_context, page_layout, play_button, shutdown_button,
                     print('settings')
                     page_layout.show_page("settings_page")
 
-                if play_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                if page_layout.showing_page_name == "main_page" and play_button.contains((touch_context.touchedY, touch_context.touchedX)):
                     print('play/pause')
                     cc.send(ConsumerControlCode.PLAY_PAUSE)
                     
-                if shutdown_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                if page_layout.showing_page_name == "settings_page" and shutdown_button.contains((touch_context.touchedY, touch_context.touchedX)):
                     print('shutdown')
                     if not shutdown_pressed:
                         shutdown_button.label = CONFIRMATION_TEXT
@@ -162,6 +164,12 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
 
                 request_artist_val = request["artist"]
                 request_title_val = request["title"]
+                is_playing = request["isPlaying"]
+
+                if is_playing:
+                    play_button.label = PAUSE_TEXT
+                else:
+                    play_button.label = PLAY_TEXT
 
                 if request_artist_val is None and request_title_val is None:
                     music_label.text = IDLE_MUSIC
@@ -220,7 +228,7 @@ async def main():
     
     page_layout = PageLayout(x=0, y=0)
 
-    play_button = create_button(125, 95, "PLAY")
+    play_button = create_button(125, 95, PLAY_TEXT)
     settings_button = create_button(240, 180, "SETTINGS")
 
     shutdown_button = create_button(135, 90, SHUTDOWN_BUTTON_TEXT)
