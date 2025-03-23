@@ -1,9 +1,8 @@
 from constants import TFT_HEIGHT, TFT_WIDTH
 from xpt2046 import Touch
-
-import board
 import busio
 import time
+from pinout import *
 
 touchSt_Idle_0     = const(0)
 touchSt_DnDeb_1    = const(1)
@@ -19,19 +18,13 @@ touchDb_NUM = const(3)
 
 class TouchContext:
     def __init__(self):
-        touch_spi_clk = board.GP10
-        touch_spi_mosi = board.GP11
-        touch_spi_miso = board.GP8
-
-        touch_cs = board.GP12
-
         touch_x_min = 120
         touch_x_max = 1847
         touch_y_min = 148
         touch_y_max = 1914
 
-        touch_spi = busio.SPI(touch_spi_clk, MOSI=touch_spi_mosi, MISO=touch_spi_miso)
-        self.touch = Touch(touch_spi, cs=touch_cs,
+        touch_spi = busio.SPI(TOUCH_SPI_CLK, MOSI=TOUCH_SPI_MOSI, MISO=TOUCH_SPI_MISO)
+        self.touch = Touch(touch_spi, cs=TOUCH_CS,
                     x_min=touch_x_min, x_max=touch_x_max,
                     y_min=touch_y_min, y_max=touch_y_max)
 

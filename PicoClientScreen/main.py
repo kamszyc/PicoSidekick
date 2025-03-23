@@ -1,4 +1,4 @@
-from devmode import devmode_enabled, toggle_devmode
+from devmode import *
 import microcontroller
 import usb_hid
 from constants import TFT_HEIGHT, TFT_WIDTH
@@ -7,7 +7,6 @@ import usb_cdc
 from adafruit_hid.consumer_control import ConsumerControl
 from adafruit_hid.consumer_control_code import ConsumerControlCode
 import time
-import board
 import asyncio
 import busio
 import terminalio
@@ -18,6 +17,7 @@ import adafruit_ili9341
 from adafruit_button import Button
 from adafruit_display_shapes.rect import Rect
 from adafruit_displayio_layout.layouts.page_layout import PageLayout
+from pinout import *
 
 SHUTDOWN_BUTTON_TEXT = "SHUTDOWN"
 CONFIRMATION_TEXT = "SURE?"
@@ -94,16 +94,10 @@ def create_settings_page(shutdown_button, devmode_button, back_button):
 async def render_display(page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button):
     displayio.release_displays()
 
-    tft_spi_clk = board.GP6
-    tft_spi_mosi = board.GP7
-    tft_cs = board.GP13
-    tft_dc = board.GP15
-    tft_res = board.GP14
-
-    tft_spi = busio.SPI(tft_spi_clk, MOSI=tft_spi_mosi)
+    tft_spi = busio.SPI(TFT_SPI_CLK, MOSI=TFT_SPI_MOSI)
 
     display_bus = displayio.FourWire(
-        tft_spi, command=tft_dc, chip_select=tft_cs, reset=tft_res)
+        tft_spi, command=TFT_DC, chip_select=TFT_CS, reset=TFT_RES)
 
     display = adafruit_ili9341.ILI9341(
         display_bus,
