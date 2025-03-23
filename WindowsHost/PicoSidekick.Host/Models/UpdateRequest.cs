@@ -9,6 +9,7 @@ namespace PicoSidekick.Host.Models
     public class UpdateRequest
     {
         public string Time { get; set; }
+        public bool IsMediaActive { get; set; }
         public string Artist { get; set; }
         public string Title { get; set; }
         public bool IsPlaying { get; set; }

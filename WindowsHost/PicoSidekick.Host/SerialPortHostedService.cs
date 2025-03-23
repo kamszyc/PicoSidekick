@@ -63,6 +63,7 @@ namespace PicoSidekick.Host
                     {
                         Artist = mediaReading.Artist,
                         Title = mediaReading.Title,
+                        IsMediaActive = mediaReading.IsMediaActive,
                         IsPlaying = mediaReading.IsPlaying,
                         Time = DateTime.Now.ToShortTimeString(),
                         UsedCPUPercent = perfReading.Cpu,

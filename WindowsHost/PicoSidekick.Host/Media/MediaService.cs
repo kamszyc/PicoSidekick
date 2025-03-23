@@ -40,12 +40,14 @@ namespace PicoSidekick.Host.Media
                     .TryGetMediaPropertiesAsync();
             }
 
-            bool isPlaying = session != null && IsSessionPlaying(session);
+            bool isMediaActive = session != null;
+            bool isPlaying = isMediaActive && IsSessionPlaying(session);
             string artist = GetArtistName(mediaProperties);
             string title = mediaProperties?.Title;
 
             return new MediaReading
             {
+                IsMediaActive = isMediaActive,
                 Artist = artist?.RemoveDiacritics(),
                 Title = title?.RemoveDiacritics(),
                 IsPlaying = isPlaying,

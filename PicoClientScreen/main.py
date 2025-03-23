@@ -123,7 +123,7 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
     page_layout.add_content(main_group, "main_page")
     page_layout.add_content(settings_group, "settings_page")
 
-    IDLE_MUSIC = "Play some music!"
+    IDLE_MUSIC = "No media playing"
 
     text_group = displayio.Group(scale=2, x=10, y=10)
 
@@ -164,7 +164,15 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
 
                 request_artist_val = request["artist"]
                 request_title_val = request["title"]
+                is_media_active = request["isMediaActive"]
                 is_playing = request["isPlaying"]
+
+                if not is_media_active:
+                    if play_button in main_group:
+                        main_group.remove(play_button)
+                else:
+                    if play_button not in main_group:
+                        main_group.append(play_button)
 
                 if is_playing:
                     play_button.label = PAUSE_TEXT
