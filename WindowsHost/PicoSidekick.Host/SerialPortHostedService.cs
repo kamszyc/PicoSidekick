@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic.Devices;
+using PicoSidekick.Host.Performance;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,14 +19,17 @@ namespace PicoSidekick.Host
     public class SerialPortHostedService : BackgroundService
     {
         private readonly TrayIconFactory _trayIconFactory;
+        private readonly PerformanceService _performanceService;
         private readonly ILogger<SerialPortHostedService> _logger;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public SerialPortHostedService(
             TrayIconFactory trayIconFactory,
+            PerformanceService performanceService,
             ILogger<SerialPortHostedService> logger)
         {
             _trayIconFactory = trayIconFactory;
+            _performanceService = performanceService;
             _logger = logger;
             _jsonSerializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         }
@@ -38,13 +42,6 @@ namespace PicoSidekick.Host
             await mediaManager.StartAsync();
 
             await _trayIconFactory.CreateTrayIcon();
-
-            var computerInfo = new ComputerInfo();
-
-            float totalRamInGigabytes = BytesToGigabytes(computerInfo.TotalPhysicalMemory);
-            float totalRamInGigabytesRounded = (float)Math.Round(totalRamInGigabytes, 1);
-            var cpuCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total");
-            var availableRamCounter = new PerformanceCounter("Memory", "Available Bytes");
 
             SerialPort port = null;
             while (!stoppingToken.IsCancellationRequested)
@@ -77,17 +74,16 @@ namespace PicoSidekick.Host
                     string artist = GetArtistName(mediaProperties);
                     string title = mediaProperties?.Title;
 
-                    float cpu = (float)Math.Round(cpuCounter.NextValue());
-                    float usedRamInGigabytes = CalculateUsedRam(totalRamInGigabytes, availableRamCounter);
+                    var perfReading = _performanceService.Read();
 
                     var updateRequest = new UpdateRequest
                     {
                         Time = DateTime.Now.ToShortTimeString(),
                         Artist = artist?.RemoveDiacritics(),
                         Title = title?.RemoveDiacritics(),
-                        UsedCPUPercent = cpu,
-                        UsedRAMGigabytes = usedRamInGigabytes,
-                        TotalRAMGigabytes = totalRamInGigabytesRounded,
+                        UsedCPUPercent = perfReading.Cpu,
+                        UsedRAMGigabytes = perfReading.UsedRamInGigabytes,
+                        TotalRAMGigabytes = _performanceService.TotalRamInGigabytes,
                     };
                     string request = JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions);
                     port.WriteLine(request);
@@ -117,17 +113,6 @@ namespace PicoSidekick.Host
                     Process.Start(psi);
                 }
             }
-        }
-
-        private static float CalculateUsedRam(float totalRamInGigabytes, PerformanceCounter availableRamCounter)
-        {
-            float usedRamInGigabytes = totalRamInGigabytes - BytesToGigabytes(availableRamCounter.NextValue());
-            return (float)Math.Round(usedRamInGigabytes, 1);
-        }
-
-        private static float BytesToGigabytes(float bytes)
-        {
-            return bytes / 1024f / 1024f / 1024f;
         }
 
         private SerialPort OpenPort()
