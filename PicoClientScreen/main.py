@@ -164,8 +164,8 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
 
                 request_artist_val = request["artist"]
                 request_title_val = request["title"]
-                is_media_active = request["isMediaActive"]
-                is_playing = request["isPlaying"]
+                is_media_active = request["is_media_active"]
+                is_playing = request["is_playing"]
 
                 if not is_media_active:
                     if play_button in main_group:
@@ -191,11 +191,11 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
 
                 music_label.x = int(150 / 2 - music_label.width / 2)
 
-                cpu_label_value = "CPU: " + str(request["usedCPUPercent"]) + "%"
+                cpu_label_value = "CPU: " + str(request["used_cpu_percent"]) + "%"
                 if cpu_label.text.strip() != cpu_label_value:
                     cpu_label.text = cpu_label_value
 
-                ram_label_value = "RAM: " + str(request["usedRAMGigabytes"]) + "/" + str(request["totalRAMGigabytes"]) + "GB"
+                ram_label_value = "RAM: " + str(request["used_ram_gigabytes"]) + "/" + str(request["total_ram_gigabytes"]) + "GB"
                 if ram_label.text.strip() != ram_label_value:
                     ram_label.text = ram_label_value
 

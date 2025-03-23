@@ -33,7 +33,7 @@ namespace PicoSidekick.Host
             _mediaService = mediaService;
             _performanceService = performanceService;
             _logger = logger;
-            _jsonSerializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            _jsonSerializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
