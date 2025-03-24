@@ -9,12 +9,20 @@ namespace PicoSidekick.Host.Models
     public class ScreenCommand
     {
         private const string ShutdownCommand = "shutdown";
+        private const string SettingsCommand = "settings";
 
         public string Command { get; set; }
+
+        public bool DevModeEnabled { get; set; }
 
         public bool IsShutdown()
         {
             return Command == ShutdownCommand;
+        }
+
+        public bool IsSettings()
+        {
+            return Command == SettingsCommand;
         }
     }
 }

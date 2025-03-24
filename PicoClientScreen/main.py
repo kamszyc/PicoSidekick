@@ -44,8 +44,6 @@ async def handle_touch(touch_context, page_layout, play_button, shutdown_button,
                 if page_layout.showing_page_name == "settings_page" and devmode_button.contains((touch_context.touchedY, touch_context.touchedX)):
                     print('devmode on/off')
                     toggle_devmode()
-                    microcontroller.reset()
-
                 
                 if page_layout.showing_page_name == "settings_page" and back_button.contains((touch_context.touchedY, touch_context.touchedX)):
                     print('back')
@@ -90,6 +88,9 @@ def create_settings_page(shutdown_button, devmode_button, back_button):
     settings_page_group.append(devmode_button)
     settings_page_group.append(back_button)
     return settings_page_group
+
+def send_current_settings():
+    usb_cdc.data.write(json.dumps({'command':'settings', 'dev_mode_enabled' : devmode_enabled()}) + '\n')
 
 async def render_display(page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button):
     displayio.release_displays()
@@ -156,6 +157,13 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
                 data_in = usb_cdc.data.readline()
                 request = json.loads(data_in)
 
+                updated_settings = request["updated_settings"]
+                if updated_settings:
+                    if updated_settings["dev_mode_enabled"]:
+                        enable_devmode()
+                    else:
+                        disable_devmode()
+
                 request_artist_val = request["artist"]
                 request_title_val = request["title"]
                 is_media_active = request["is_media_active"]
@@ -209,6 +217,8 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
         music_label.update()
 
         display.refresh()
+
+        send_current_settings()
 
         await asyncio.sleep(0.1)
 

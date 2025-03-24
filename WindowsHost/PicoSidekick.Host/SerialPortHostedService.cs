@@ -5,6 +5,7 @@ using Microsoft.VisualBasic.Devices;
 using PicoSidekick.Host.Media;
 using PicoSidekick.Host.Models;
 using PicoSidekick.Host.Performance;
+using PicoSidekick.Host.Settings;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,16 +23,19 @@ namespace PicoSidekick.Host
     {
         private readonly MediaService _mediaService;
         private readonly PerformanceService _performanceService;
+        private readonly SettingsService _settingsService;
         private readonly ILogger<SerialPortHostedService> _logger;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public SerialPortHostedService(
             MediaService mediaService,
             PerformanceService performanceService,
+            SettingsService settingsService,
             ILogger<SerialPortHostedService> logger)
         {
             _mediaService = mediaService;
             _performanceService = performanceService;
+            _settingsService = settingsService;
             _logger = logger;
             _jsonSerializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
         }
@@ -45,13 +49,12 @@ namespace PicoSidekick.Host
             {
                 try
                 {
-
                     if (port == null || !port.IsOpen)
                     {
                         port = OpenPort();
                         if (port == null)
                         {
-                            await Task.Delay(5000, stoppingToken);
+                            await Task.Delay(1000, stoppingToken);
                             continue;
                         }
                     }
@@ -67,6 +70,7 @@ namespace PicoSidekick.Host
                 }
                 catch (Exception e)
                 {
+                    _settingsService.Lock();
                     _logger.LogWarning(e, "Error, continuing...");
                 }
 
@@ -86,6 +90,7 @@ namespace PicoSidekick.Host
                 UsedCPUPercent = perfReading.Cpu,
                 UsedRAMGigabytes = perfReading.UsedRamInGigabytes,
                 TotalRAMGigabytes = _performanceService.TotalRamInGigabytes,
+                UpdatedSettings = _settingsService.GetUpdatedSettings(),
             };
         }
 
@@ -94,8 +99,14 @@ namespace PicoSidekick.Host
             if (port.BytesToRead > 0)
             {
                 string commandJson = port.ReadLine();
-                ScreenCommand command = JsonSerializer.Deserialize<ScreenCommand>(commandJson, _jsonSerializerOptions);
-                if (command.IsShutdown())
+                ScreenCommand screenCommand = JsonSerializer.Deserialize<ScreenCommand>(commandJson, _jsonSerializerOptions);
+                if (screenCommand.IsSettings())
+                {
+                    var settings = new SettingsModel(screenCommand.DevModeEnabled);
+                    _settingsService.SetCurrentSettingsFromScreen(settings);
+                }
+
+                if (screenCommand.IsShutdown())
                 {
                     var psi = new ProcessStartInfo("shutdown", "/s /hybrid /t 5")
                     {
@@ -112,6 +123,7 @@ namespace PicoSidekick.Host
             string portName = ComDeviceFinder.GetCircuitPythonDataSerialPortName();
             if (portName == null)
             {
+                _settingsService.Lock();
                 _logger.LogInformation("No compatible Circuit Python serial port found");
                 return null;
             }
@@ -121,6 +133,8 @@ namespace PicoSidekick.Host
                 DtrEnable = true
             };
             port.Open();
+
+            _settingsService.Unlock();
 
             _logger.LogInformation("Connected!");
             return port;

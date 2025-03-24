@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PicoSidekick.Host.Settings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +17,6 @@ namespace PicoSidekick.Host.Models
         public float UsedCPUPercent { get; set; }
         public float UsedRAMGigabytes { get; set; }
         public float TotalRAMGigabytes { get; set; }
+        public SettingsModel UpdatedSettings { get; set; }
     }
 }

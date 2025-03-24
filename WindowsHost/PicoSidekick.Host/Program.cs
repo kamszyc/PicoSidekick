@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PicoSidekick.Host.Media;
 using PicoSidekick.Host.Performance;
+using PicoSidekick.Host.Settings;
 using System.IO.Ports;
 using System.Management;
 using System.Text.Json;
@@ -19,10 +20,12 @@ namespace PicoSidekick.Host
         private static void Main(string[] args)
         {
             var builder = Microsoft.Extensions.Hosting.Host.CreateApplicationBuilder(args);
-            builder.Services.AddWindowsFormsLifetime<SidekickApplicationContext>(preApplicationRunAction: serviceProvider => Application.SetColorMode(SystemColorMode.System));
+            builder.Services.AddWindowsFormsLifetime<SidekickApplicationContext>(preApplicationRunAction: serviceProvider => Application.SetColorMode(SystemColorMode.Classic));
             builder.Services.AddHostedService<SerialPortHostedService>();
             builder.Services.AddSingleton<PerformanceService>();
             builder.Services.AddSingleton<MediaService>();
+            builder.Services.AddSingleton<SettingsService>();
+            builder.Services.AddTransient<SettingsForm>();
 
             var app = builder.Build();
             app.Run();
