@@ -20,7 +20,9 @@ namespace PicoSidekick.Host
         private static void Main(string[] args)
         {
             var builder = Microsoft.Extensions.Hosting.Host.CreateApplicationBuilder(args);
-            builder.Services.AddWindowsFormsLifetime<SidekickApplicationContext>(preApplicationRunAction: serviceProvider => Application.SetColorMode(SystemColorMode.Classic));
+            builder.Services.AddWindowsFormsLifetime<SidekickApplicationContext>(
+                configure: options => options.HighDpiMode = HighDpiMode.PerMonitorV2,
+                preApplicationRunAction: serviceProvider => Application.SetColorMode(SystemColorMode.Classic));
             builder.Services.AddHostedService<SerialPortHostedService>();
             builder.Services.AddSingleton<PerformanceService>();
             builder.Services.AddSingleton<MediaService>();
