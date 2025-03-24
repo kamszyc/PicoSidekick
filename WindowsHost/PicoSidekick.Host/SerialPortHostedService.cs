@@ -104,6 +104,7 @@ namespace PicoSidekick.Host
                 {
                     var settings = new SettingsModel(screenCommand.DevModeEnabled);
                     _settingsService.SetCurrentSettingsFromScreen(settings);
+                    _settingsService.Unlock();
                 }
 
                 if (screenCommand.IsShutdown())
@@ -133,8 +134,6 @@ namespace PicoSidekick.Host
                 DtrEnable = true
             };
             port.Open();
-
-            _settingsService.Unlock();
 
             _logger.LogInformation("Connected!");
             return port;

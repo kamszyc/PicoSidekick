@@ -25,7 +25,7 @@ namespace PicoSidekick.Host
             builder.Services.AddSingleton<PerformanceService>();
             builder.Services.AddSingleton<MediaService>();
             builder.Services.AddSingleton<SettingsService>();
-            builder.Services.AddTransient<SettingsForm>();
+            builder.Services.AddScoped<SettingsForm>();
 
             var app = builder.Build();
             app.Run();

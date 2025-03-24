@@ -1,4 +1,5 @@
-﻿using PicoSidekick.Host.Settings;
+﻿using Microsoft.Extensions.DependencyInjection;
+using PicoSidekick.Host.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace PicoSidekick.Host
 {
     public class SidekickApplicationContext : ApplicationContext
     {
-        public SidekickApplicationContext(SettingsService settingsService, IFormProvider formProvider)
+        public SidekickApplicationContext(SettingsService settingsService, IFormProvider formProvider, IServiceScopeFactory serviceScopeFactory)
         {
             var trayIcon = new NotifyIcon()
             {
@@ -24,11 +25,29 @@ namespace PicoSidekick.Host
             {
                 Text = "Settings"
             };
+            IServiceScope scope = serviceScopeFactory.CreateScope();
             settingsItem.Click += (sender, e) =>
             {
-                using var form = formProvider.GetForm<SettingsForm>();
-                if (form.ShowDialog() == DialogResult.OK)
-                    settingsService.SetFromSettingsForm(form.Settings);
+                var form = formProvider.GetForm<SettingsForm>(scope);
+                if (form.CanFocus)
+                {
+                    form.WindowState = FormWindowState.Normal;
+                    form.Focus();
+                }
+                else
+                {
+                    try
+                    {
+                        if (form.ShowDialog() == DialogResult.OK)
+                            settingsService.SetFromSettingsForm(form.Settings);
+                    }
+                    finally
+                    {
+                        form.Dispose();
+                        scope.Dispose();
+                        scope = serviceScopeFactory.CreateScope();
+                    }
+                }
             };
             trayIcon.ContextMenuStrip.Items.Add(settingsItem);
 

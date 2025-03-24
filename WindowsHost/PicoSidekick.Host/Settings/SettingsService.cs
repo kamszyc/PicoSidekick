@@ -11,6 +11,7 @@ namespace PicoSidekick.Host.Settings
         private SettingsModel _settings;
         private bool _settingsUpdated;
         private bool _settingsLocked;
+        private Lock _lock = new Lock();
 
         public SettingsModel Settings
         {
@@ -30,34 +31,52 @@ namespace PicoSidekick.Host.Settings
 
         public SettingsModel GetUpdatedSettings()
         {
-            if (_settingsUpdated)
+            lock (_lock)
             {
-                _settingsUpdated = false;
-                return Settings;
+                if (_settingsUpdated)
+                {
+                    _settingsUpdated = false;
+                    return Settings;
+                }
+                return null;
             }
-            return null;
         }
 
         public void SetFromSettingsForm(SettingsModel settings)
         {
-            Settings = settings;
-            _settingsUpdated = true;
+            lock (_lock)
+            {
+                Settings = settings;
+                _settingsUpdated = true;
+            }
         }
 
         public void SetCurrentSettingsFromScreen(SettingsModel settings)
         {
-            Settings = settings;
+            lock (_lock)
+            {
+                if (_settingsUpdated)
+                    return;
+
+                Settings = settings;
+            }
         }
 
         public void Unlock()
         {
-            _settingsLocked = false;
+            lock (_lock)
+            {
+                _settingsLocked = false;
+            }
         }
 
         public void Lock()
         {
-            _settingsLocked = true;
-            Locked?.Invoke(this, new EventArgs());
+            lock (_lock)
+            {
+                _settingsLocked = true;
+                Locked?.Invoke(this, new EventArgs());
+            }
         }
     }
 }
