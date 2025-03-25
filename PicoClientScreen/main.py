@@ -1,4 +1,4 @@
-from devmode import *
+from config import *
 import microcontroller
 import usb_hid
 from constants import TFT_HEIGHT, TFT_WIDTH
@@ -43,7 +43,7 @@ async def handle_touch(touch_context, page_layout, play_button, shutdown_button,
 
                 if page_layout.showing_page_name == "settings_page" and devmode_button.contains((touch_context.touchedY, touch_context.touchedX)):
                     print('devmode on/off')
-                    toggle_devmode()
+                    toggle_dev_mode()
                 
                 if page_layout.showing_page_name == "settings_page" and back_button.contains((touch_context.touchedY, touch_context.touchedX)):
                     print('back')
@@ -90,7 +90,7 @@ def create_settings_page(shutdown_button, devmode_button, back_button):
     return settings_page_group
 
 def send_current_settings():
-    usb_cdc.data.write(json.dumps({'command':'settings', 'dev_mode_enabled' : devmode_enabled()}) + '\n')
+    usb_cdc.data.write(json.dumps({'command':'settings', 'dev_mode_enabled' : dev_mode_enabled()}) + '\n')
 
 async def render_display(page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button):
     displayio.release_displays()
@@ -160,9 +160,12 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
                 updated_settings = request["updated_settings"]
                 if updated_settings:
                     if updated_settings["dev_mode_enabled"]:
-                        enable_devmode()
+                        enable_dev_mode()
                     else:
-                        disable_devmode()
+                        disable_dev_mode()
+
+                    if updated_settings["restart_in_uf2_mode"]:
+                        restart_in_uf2_mode()
 
                 request_artist_val = request["artist"]
                 request_title_val = request["title"]
@@ -245,7 +248,7 @@ async def main():
 
     shutdown_button = create_button(135, 90, SHUTDOWN_BUTTON_TEXT)
     back_button = create_button(135, 170, "BACK")
-    devmode_text = "DEVMODE OFF" if devmode_enabled() else "DEVMODE ON"
+    devmode_text = "DEVMODE OFF" if dev_mode_enabled() else "DEVMODE ON"
     devmode_button = create_button(135, 10, devmode_text)
 
     handle_touch_task = asyncio.create_task(handle_touch(touch_context, page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button))

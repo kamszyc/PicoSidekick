@@ -1,22 +1,26 @@
 import microcontroller
 
-def devmode_enabled():
+def dev_mode_enabled():
     return microcontroller.nvm[0] == 1
 
-def toggle_devmode():
+def toggle_dev_mode():
     microcontroller.nvm[0] = int(not microcontroller.nvm[0])
     microcontroller.reset()
     
-def enable_devmode():
+def enable_dev_mode():
     if microcontroller.nvm[0]:
         return
     
     microcontroller.nvm[0] = 1
     microcontroller.reset()
 
-def disable_devmode():
+def disable_dev_mode():
     if not microcontroller.nvm[0]:
         return
     
     microcontroller.nvm[0] = 0
+    microcontroller.reset()
+
+def restart_in_uf2_mode():
+    microcontroller.on_next_reset(microcontroller.RunMode.UF2)
     microcontroller.reset()

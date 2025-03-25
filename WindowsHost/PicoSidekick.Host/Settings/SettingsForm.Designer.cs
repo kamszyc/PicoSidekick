@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             groupBox1 = new GroupBox();
+            restartInUf2ModeCheckbox = new CheckBox();
             devModeEnabledCheckbox = new CheckBox();
             okButton = new Button();
             cancelButton = new Button();
@@ -37,6 +38,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(restartInUf2ModeCheckbox);
             groupBox1.Controls.Add(devModeEnabledCheckbox);
             groupBox1.Location = new Point(12, 12);
             groupBox1.Name = "groupBox1";
@@ -45,6 +47,16 @@
             groupBox1.TabStop = false;
             groupBox1.Text = "Settings";
             // 
+            // restartInUf2ModeCheckbox
+            // 
+            restartInUf2ModeCheckbox.AutoSize = true;
+            restartInUf2ModeCheckbox.Location = new Point(16, 47);
+            restartInUf2ModeCheckbox.Name = "restartInUf2ModeCheckbox";
+            restartInUf2ModeCheckbox.Size = new Size(132, 19);
+            restartInUf2ModeCheckbox.TabIndex = 1;
+            restartInUf2ModeCheckbox.Text = "Restart in UF2 mode";
+            restartInUf2ModeCheckbox.UseVisualStyleBackColor = true;
+            // 
             // devModeEnabledCheckbox
             // 
             devModeEnabledCheckbox.AutoSize = true;
@@ -52,7 +64,7 @@
             devModeEnabledCheckbox.Name = "devModeEnabledCheckbox";
             devModeEnabledCheckbox.Size = new Size(259, 19);
             devModeEnabledCheckbox.TabIndex = 0;
-            devModeEnabledCheckbox.Text = "Dev Mode Enabled (CIRCUITPY drive visible)";
+            devModeEnabledCheckbox.Text = "Dev Mode enabled (CIRCUITPY drive visible)";
             devModeEnabledCheckbox.UseVisualStyleBackColor = true;
             // 
             // okButton
@@ -86,6 +98,7 @@
             Controls.Add(groupBox1);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Name = "SettingsForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Pico Sidekick";
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
@@ -98,5 +111,6 @@
         private CheckBox devModeEnabledCheckbox;
         private Button okButton;
         private Button cancelButton;
+        private CheckBox restartInUf2ModeCheckbox;
     }
 }

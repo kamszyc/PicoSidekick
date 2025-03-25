@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PicoSidekick.Host.Settings
 {
-    public record SettingsModel(bool DevModeEnabled)
+    public record SettingsModel(bool DevModeEnabled, bool RestartInUf2Mode)
     {
     }
 }

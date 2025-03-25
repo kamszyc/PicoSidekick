@@ -29,6 +29,7 @@ namespace PicoSidekick.Host.Settings
 
             Settings = settingsService.Settings;
             devModeEnabledCheckbox.Checked = Settings.DevModeEnabled;
+            restartInUf2ModeCheckbox.Checked = Settings.RestartInUf2Mode;
             EnableDisableControls(!settingsService.SettingsLocked);
 
             settingsService.ChangesDisabled += SettingsService_ChangesDisabled;
@@ -44,13 +45,14 @@ namespace PicoSidekick.Host.Settings
             _guiContext.Invoke(() =>
             {
                 devModeEnabledCheckbox.Enabled = enable;
+                restartInUf2ModeCheckbox.Enabled = enable;
                 okButton.Enabled = enable;
             });
         }
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            Settings = Settings with { DevModeEnabled = devModeEnabledCheckbox.Checked };
+            Settings = Settings with { DevModeEnabled = devModeEnabledCheckbox.Checked, RestartInUf2Mode = restartInUf2ModeCheckbox.Checked };
             DialogResult = DialogResult.OK;
             Close();
         }
