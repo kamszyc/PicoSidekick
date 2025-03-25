@@ -70,7 +70,7 @@ namespace PicoSidekick.Host
                 }
                 catch (Exception e)
                 {
-                    _settingsService.Lock();
+                    _settingsService.DisableChanges();
                     _logger.LogWarning(e, "Error, continuing...");
                 }
 
@@ -104,7 +104,6 @@ namespace PicoSidekick.Host
                 {
                     var settings = new SettingsModel(screenCommand.DevModeEnabled);
                     _settingsService.SetCurrentSettingsFromScreen(settings);
-                    _settingsService.Unlock();
                 }
 
                 if (screenCommand.IsShutdown())
@@ -124,7 +123,7 @@ namespace PicoSidekick.Host
             string portName = ComDeviceFinder.GetCircuitPythonDataSerialPortName();
             if (portName == null)
             {
-                _settingsService.Lock();
+                _settingsService.DisableChanges();
                 _logger.LogInformation("No compatible Circuit Python serial port found");
                 return null;
             }

@@ -31,10 +31,10 @@ namespace PicoSidekick.Host.Settings
             devModeEnabledCheckbox.Checked = Settings.DevModeEnabled;
             EnableDisableControls(!settingsService.SettingsLocked);
 
-            settingsService.Locked += SettingsService_Locked;
+            settingsService.ChangesDisabled += SettingsService_ChangesDisabled;
         }
 
-        private void SettingsService_Locked(object sender, EventArgs e)
+        private void SettingsService_ChangesDisabled(object sender, EventArgs e)
         {
             EnableDisableControls(false);
         }
@@ -58,7 +58,7 @@ namespace PicoSidekick.Host.Settings
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
-            _settingsService.Locked -= SettingsService_Locked;
+            _settingsService.ChangesDisabled -= SettingsService_ChangesDisabled;
         }
     }
 }

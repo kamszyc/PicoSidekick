@@ -10,7 +10,7 @@ namespace PicoSidekick.Host.Settings
     {
         private SettingsModel _settings;
         private bool _settingsUpdated;
-        private bool _settingsLocked;
+        private bool _disableChanges;
         private Lock _lock = new Lock();
 
         public SettingsModel Settings
@@ -19,14 +19,14 @@ namespace PicoSidekick.Host.Settings
             private set => _settings = value;
         }
 
-        public bool SettingsLocked => _settingsLocked;
+        public bool SettingsLocked => _disableChanges;
 
-        public event EventHandler Locked;
+        public event EventHandler ChangesDisabled;
 
         public SettingsService()
         {
             Settings = new SettingsModel(false);
-            _settingsLocked = true;
+            _disableChanges = true;
         }
 
         public SettingsModel GetUpdatedSettings()
@@ -59,23 +59,16 @@ namespace PicoSidekick.Host.Settings
                     return;
 
                 Settings = settings;
+                _disableChanges = false;
             }
         }
 
-        public void Unlock()
+        public void DisableChanges()
         {
             lock (_lock)
             {
-                _settingsLocked = false;
-            }
-        }
-
-        public void Lock()
-        {
-            lock (_lock)
-            {
-                _settingsLocked = true;
-                Locked?.Invoke(this, new EventArgs());
+                _disableChanges = true;
+                ChangesDisabled?.Invoke(this, new EventArgs());
             }
         }
     }
