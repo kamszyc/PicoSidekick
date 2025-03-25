@@ -1,3 +1,4 @@
+from micropython import const
 from constants import TFT_HEIGHT, TFT_WIDTH
 from xpt2046 import Touch
 import busio

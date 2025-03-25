@@ -6,6 +6,7 @@ https://github.com/rdagger/micropython-ili9341/blob/master/xpt2046.py
 remove interrupt and re-config pin for CircuitPython
 """
 from time import sleep
+from micropython import const
 import digitalio
 
 class Touch(object):
