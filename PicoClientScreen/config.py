@@ -18,9 +18,3 @@ def disable_dev_mode():
         return
     
     microcontroller.nvm[0] = 0
-
-def set_restart_in_uf2_mode():
-    microcontroller.on_next_reset(microcontroller.RunMode.UF2)
-
-def restart():
-    microcontroller.reset()

@@ -226,9 +226,9 @@ def apply_settings(updated_settings):
             disable_dev_mode()
 
         if updated_settings["restart_in_uf2_mode"]:
-            set_restart_in_uf2_mode()
+            microcontroller.on_next_reset(microcontroller.RunMode.UF2)
         
-        restart()
+        microcontroller.reset()
 
 def create_button(x, y, label):
     return Button(
