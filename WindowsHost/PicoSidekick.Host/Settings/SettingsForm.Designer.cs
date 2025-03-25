@@ -97,6 +97,7 @@
             Controls.Add(okButton);
             Controls.Add(groupBox1);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
             Name = "SettingsForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Pico Sidekick";
