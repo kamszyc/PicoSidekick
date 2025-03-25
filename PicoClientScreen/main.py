@@ -158,14 +158,7 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
                 request = json.loads(data_in)
 
                 updated_settings = request["updated_settings"]
-                if updated_settings:
-                    if updated_settings["dev_mode_enabled"]:
-                        enable_dev_mode()
-                    else:
-                        disable_dev_mode()
-
-                    if updated_settings["restart_in_uf2_mode"]:
-                        restart_in_uf2_mode()
+                apply_settings(updated_settings)
 
                 request_artist_val = request["artist"]
                 request_title_val = request["title"]
@@ -224,6 +217,18 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
         send_current_settings()
 
         await asyncio.sleep(0.1)
+
+def apply_settings(updated_settings):
+    if updated_settings:
+        if updated_settings["dev_mode_enabled"]:
+            enable_dev_mode()
+        else:
+            disable_dev_mode()
+
+        if updated_settings["restart_in_uf2_mode"]:
+            set_restart_in_uf2_mode()
+        
+        restart()
 
 def create_button(x, y, label):
     return Button(
