@@ -47,6 +47,7 @@ namespace PicoSidekick.Host.Settings
             {
                 devModeEnabledCheckbox.Enabled = enable;
                 restartInUf2ModeCheckbox.Enabled = enable;
+                trackBarBrightness.Enabled = enable;
                 okButton.Enabled = enable;
             });
         }
