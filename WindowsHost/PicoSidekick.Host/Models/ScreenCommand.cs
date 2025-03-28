@@ -15,6 +15,8 @@ namespace PicoSidekick.Host.Models
 
         public bool DevModeEnabled { get; set; }
 
+        public int Brightness { get; set; }
+
         public bool IsShutdown()
         {
             return Command == ShutdownCommand;

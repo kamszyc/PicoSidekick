@@ -102,7 +102,7 @@ namespace PicoSidekick.Host
                 ScreenCommand screenCommand = JsonSerializer.Deserialize<ScreenCommand>(commandJson, _jsonSerializerOptions);
                 if (screenCommand.IsSettings())
                 {
-                    var settings = new SettingsModel(screenCommand.DevModeEnabled, RestartInUf2Mode: false);
+                    var settings = new SettingsModel(screenCommand.DevModeEnabled, RestartInUf2Mode: false, screenCommand.Brightness);
                     _settingsService.SetCurrentSettingsFromScreen(settings);
                 }
 

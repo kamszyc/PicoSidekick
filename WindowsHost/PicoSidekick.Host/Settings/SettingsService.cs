@@ -25,7 +25,7 @@ namespace PicoSidekick.Host.Settings
 
         public SettingsService()
         {
-            Settings = new SettingsModel(false, false);
+            Settings = new SettingsModel(false, false, 40);
             _disableChanges = true;
         }
 

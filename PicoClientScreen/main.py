@@ -18,6 +18,7 @@ from adafruit_button import Button
 from adafruit_display_shapes.rect import Rect
 from adafruit_displayio_layout.layouts.page_layout import PageLayout
 from pinout import *
+import pwmio
 
 SHUTDOWN_BUTTON_TEXT = "SHUTDOWN"
 CONFIRMATION_TEXT = "SURE?"
@@ -89,11 +90,16 @@ def create_settings_page(shutdown_button, devmode_button, back_button):
     settings_page_group.append(back_button)
     return settings_page_group
 
-def send_current_settings():
-    usb_cdc.data.write(json.dumps({'command':'settings', 'dev_mode_enabled' : dev_mode_enabled()}) + '\n')
+def send_current_settings(pwm):
+    brightness = int(pwm.duty_cycle / (2**16 - 1) * 100)
+    print(brightness)
+    usb_cdc.data.write(json.dumps({'command':'settings', 'dev_mode_enabled' : dev_mode_enabled(), 'brightness' : brightness}) + '\n')
 
 async def render_display(page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button):
     displayio.release_displays()
+
+    pwm = pwmio.PWMOut(board.GP16)
+    pwm.duty_cycle = 2 ** 15
 
     tft_spi = busio.SPI(TFT_SPI_CLK, MOSI=TFT_SPI_MOSI)
 
@@ -158,7 +164,7 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
                 request = json.loads(data_in)
 
                 updated_settings = request["updated_settings"]
-                apply_settings(updated_settings)
+                apply_settings(pwm, updated_settings)
 
                 request_artist_val = request["artist"]
                 request_title_val = request["title"]
@@ -201,6 +207,8 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
 
                 if page_layout.showing_page_name == "idle_page":
                     page_layout.show_page("main_page")
+
+                send_current_settings(pwm)
             except Exception as e:
                 print(e)
             iterations_without_update = 0
@@ -214,13 +222,17 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
 
         display.refresh()
 
-        send_current_settings()
-
         await asyncio.sleep(0.1)
 
-def apply_settings(updated_settings):
+def apply_settings(pwm, updated_settings):
     if updated_settings:
-        if updated_settings["dev_mode_enabled"]:
+        pwm.duty_cycle = int(updated_settings["brightness"] / 100 * (2**16 - 1))
+
+        dev_mode_enabled = updated_settings["dev_mode_enabled"]
+        restart_in_uf2_mode =  updated_settings["restart_in_uf2_mode"]
+        reset_needed = dev_mode_setting_changed(dev_mode_enabled) or restart_in_uf2_mode
+
+        if dev_mode_enabled:
             enable_dev_mode()
         else:
             disable_dev_mode()
@@ -228,7 +240,8 @@ def apply_settings(updated_settings):
         if updated_settings["restart_in_uf2_mode"]:
             microcontroller.on_next_reset(microcontroller.RunMode.UF2)
         
-        microcontroller.reset()
+        if reset_needed:
+            microcontroller.reset()
 
 def create_button(x, y, label):
     return Button(

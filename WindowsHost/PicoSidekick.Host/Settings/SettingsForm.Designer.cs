@@ -33,19 +33,24 @@
             devModeEnabledCheckbox = new CheckBox();
             okButton = new Button();
             cancelButton = new Button();
+            groupBox2 = new GroupBox();
+            trackBarBrightness = new TrackBar();
+            label1 = new Label();
             groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBarBrightness).BeginInit();
             SuspendLayout();
             // 
             // groupBox1
             // 
             groupBox1.Controls.Add(restartInUf2ModeCheckbox);
             groupBox1.Controls.Add(devModeEnabledCheckbox);
-            groupBox1.Location = new Point(12, 12);
+            groupBox1.Location = new Point(12, 110);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(317, 142);
+            groupBox1.Size = new Size(317, 78);
             groupBox1.TabIndex = 0;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Settings";
+            groupBox1.Text = "Dev settings";
             // 
             // restartInUf2ModeCheckbox
             // 
@@ -69,7 +74,7 @@
             // 
             // okButton
             // 
-            okButton.Location = new Point(92, 160);
+            okButton.Location = new Point(85, 207);
             okButton.Name = "okButton";
             okButton.Size = new Size(75, 23);
             okButton.TabIndex = 1;
@@ -79,12 +84,41 @@
             // 
             // cancelButton
             // 
-            cancelButton.Location = new Point(173, 160);
+            cancelButton.Location = new Point(166, 207);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(75, 23);
             cancelButton.TabIndex = 2;
             cancelButton.Text = "Cancel";
             cancelButton.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(label1);
+            groupBox2.Controls.Add(trackBarBrightness);
+            groupBox2.Location = new Point(12, 12);
+            groupBox2.Name = "groupBox2";
+            groupBox2.RightToLeft = RightToLeft.No;
+            groupBox2.Size = new Size(317, 92);
+            groupBox2.TabIndex = 3;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "General";
+            // 
+            // trackBarBrightness
+            // 
+            trackBarBrightness.Location = new Point(6, 37);
+            trackBarBrightness.Maximum = 100;
+            trackBarBrightness.Name = "trackBarBrightness";
+            trackBarBrightness.Size = new Size(305, 45);
+            trackBarBrightness.TabIndex = 0;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(16, 19);
+            label1.Name = "label1";
+            label1.Size = new Size(62, 15);
+            label1.TabIndex = 1;
+            label1.Text = "Brightness";
             // 
             // SettingsForm
             // 
@@ -92,7 +126,8 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = cancelButton;
-            ClientSize = new Size(341, 192);
+            ClientSize = new Size(341, 242);
+            Controls.Add(groupBox2);
             Controls.Add(cancelButton);
             Controls.Add(okButton);
             Controls.Add(groupBox1);
@@ -103,6 +138,9 @@
             Text = "Pico Sidekick";
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBarBrightness).EndInit();
             ResumeLayout(false);
         }
 
@@ -113,5 +151,8 @@
         private Button okButton;
         private Button cancelButton;
         private CheckBox restartInUf2ModeCheckbox;
+        private GroupBox groupBox2;
+        private TrackBar trackBarBrightness;
+        private Label label1;
     }
 }
