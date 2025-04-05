@@ -91,15 +91,20 @@ def create_settings_page(shutdown_button, devmode_button, back_button):
     return settings_page_group
 
 def send_current_settings(pwm):
-    brightness = int(pwm.duty_cycle / (2**16 - 1) * 100)
-    print(brightness)
+    brightness = duty_cycle_to_percent(pwm.duty_cycle)
     usb_cdc.data.write(json.dumps({'command':'settings', 'dev_mode_enabled' : dev_mode_enabled(), 'brightness' : brightness}) + '\n')
+
+def duty_cycle_to_percent(duty_cycle):
+    return int(duty_cycle / (2**16 - 1) * 100)
+
+def percent_to_duty_cycle(percent):
+    return int(percent / 100 * (2**16 - 1))
 
 async def render_display(page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button):
     displayio.release_displays()
 
     pwm = pwmio.PWMOut(TFT_LED)
-    pwm.duty_cycle = 2 ** 15
+    pwm.duty_cycle = percent_to_duty_cycle(get_brightness_percent() or 50)
 
     tft_spi = busio.SPI(TFT_SPI_CLK, MOSI=TFT_SPI_MOSI)
 
@@ -226,16 +231,15 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
 
 def apply_settings(pwm, updated_settings):
     if updated_settings:
-        pwm.duty_cycle = int(updated_settings["brightness"] / 100 * (2**16 - 1))
+        brightness_percent = int(updated_settings["brightness"])
+        brightness_duty_cycle = int(brightness_percent / 100 * (2**16 - 1))
+        pwm.duty_cycle = brightness_duty_cycle
 
         dev_mode_enabled = updated_settings["dev_mode_enabled"]
         restart_in_uf2_mode =  updated_settings["restart_in_uf2_mode"]
         reset_needed = dev_mode_setting_changed(dev_mode_enabled) or restart_in_uf2_mode
 
-        if dev_mode_enabled:
-            enable_dev_mode()
-        else:
-            disable_dev_mode()
+        save_settings(dev_mode_enabled, brightness_percent)
 
         if updated_settings["restart_in_uf2_mode"]:
             microcontroller.on_next_reset(microcontroller.RunMode.UF2)
