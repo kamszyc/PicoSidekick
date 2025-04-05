@@ -42,5 +42,24 @@ https://github.com/adafruit/circup \
 4. Remove preinstalled `code.py` file and put files from `PicoClientScreen` directory into `CIRCUITPY` drive
 5. Disconnect Pico from USB and connect it again
 
+## Pinout
+
+| **TFT**   | **Pico** |
+|-----------|----------|
+| VCC       | 3V3      |
+| GND       | GND      |
+| CS        | GP13     |
+| RESET     | GP14     |
+| DC        | GP15     |
+| SDI(MOSI) | GP7      |
+| SCK       | GP6      |
+| LED       | GP16     |
+| SDO(MISO) | -        |
+| T_CLK     | GP10     |
+| T_CS      | GP12     |
+| T_DIN     | GP11     |
+| T_DO      | GP8      |
+| T_IRQ     | -        |
+
 ## References:
 1. https://helloraspberrypi.blogspot.com/2021/04/raspberry-pi-picocircuitpython-ili9341.html
