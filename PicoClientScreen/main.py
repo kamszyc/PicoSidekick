@@ -98,7 +98,7 @@ def send_current_settings(pwm):
 async def render_display(page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button):
     displayio.release_displays()
 
-    pwm = pwmio.PWMOut(board.GP16)
+    pwm = pwmio.PWMOut(TFT_LED)
     pwm.duty_cycle = 2 ** 15
 
     tft_spi = busio.SPI(TFT_SPI_CLK, MOSI=TFT_SPI_MOSI)
