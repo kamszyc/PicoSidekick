@@ -20,7 +20,8 @@ namespace PicoSidekick.Host
     {
         private static void Main(string[] args)
         {
-            if (IsAnotherInstanceRunning())
+            using Mutex mutex = new Mutex(true, "Global\\PicoSidekickHost", out bool isNewInstance);
+            if (!isNewInstance)
             {
                 MessageBox.Show("App is already running!", "Pico Sidekick", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -38,29 +39,6 @@ namespace PicoSidekick.Host
 
             var app = builder.Build();
             app.Run();
-        }
-
-        static bool IsAnotherInstanceRunning()
-        {
-            using Process current = Process.GetCurrentProcess();
-            string currentPath = current.MainModule?.FileName ?? "";
-
-            return Process.GetProcessesByName(current.ProcessName)
-                .Any(p =>
-                {
-                    if (p.Id == current.Id)
-                        return false;
-
-                    try
-                    {
-                        return (p.MainModule?.FileName ?? "") == currentPath;
-                    }
-                    catch
-                    {
-                        // Access denied to other process info (e.g., from another user session)
-                        return false;
-                    }
-                });
         }
     }
 }
