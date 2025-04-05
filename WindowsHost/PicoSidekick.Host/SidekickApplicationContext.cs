@@ -16,7 +16,7 @@ namespace PicoSidekick.Host
             var trayIcon = new NotifyIcon()
             {
                 Icon = new Icon("Pi.ico"),
-                Text = "PicoSidekick Host",
+                Text = "Pico Sidekick Host",
                 Visible = true,
                 ContextMenuStrip = new ContextMenuStrip()
             };
