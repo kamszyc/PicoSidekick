@@ -25,7 +25,7 @@ CONFIRMATION_TEXT = "SURE?"
 PLAY_TEXT = "PLAY"
 PAUSE_TEXT = "PAUSE"
 
-async def handle_touch(touch_context, page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button):
+async def handle_touch(touch_context, page_layout, play_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button):
     cc = ConsumerControl(usb_hid.devices)
     shutdown_pressed = False
     while True:
@@ -42,33 +42,41 @@ async def handle_touch(touch_context, page_layout, play_button, shutdown_button,
             if touch_context.touchEvent == EVT_PenUp:
                 print('ev PenUp - ')
 
-                if page_layout.showing_page_name == "settings_page" and devmode_button.contains((touch_context.touchedY, touch_context.touchedX)):
-                    print('devmode on/off')
-                    toggle_dev_mode()
-                
-                if page_layout.showing_page_name == "settings_page" and back_button.contains((touch_context.touchedY, touch_context.touchedX)):
-                    print('back')
-                    page_layout.show_page("main_page")
-                elif settings_button.contains((touch_context.touchedY, touch_context.touchedX)):
-                    print('settings')
-                    page_layout.show_page("settings_page")
-
-                if page_layout.showing_page_name == "main_page" and play_button.contains((touch_context.touchedY, touch_context.touchedX)):
-                    print('play/pause')
-                    cc.send(ConsumerControlCode.PLAY_PAUSE)
+                if page_layout.showing_page_name == "main_page":
+                    if play_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                        print('play/pause')
+                        cc.send(ConsumerControlCode.PLAY_PAUSE)
+                    elif vol_minus_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                        print('vol-')
+                        cc.send(ConsumerControlCode.VOLUME_DECREMENT)
+                        cc.send(ConsumerControlCode.VOLUME_DECREMENT)
+                    elif vol_plus_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                        print('vol+')
+                        cc.send(ConsumerControlCode.VOLUME_INCREMENT)
+                        cc.send(ConsumerControlCode.VOLUME_INCREMENT)
+                    elif settings_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                        print('settings')
+                        page_layout.show_page("settings_page")
                     
-                if page_layout.showing_page_name == "settings_page" and shutdown_button.contains((touch_context.touchedY, touch_context.touchedX)):
-                    print('shutdown')
-                    if not shutdown_pressed:
-                        shutdown_button.label = CONFIRMATION_TEXT
-                        shutdown_pressed = True
+                if page_layout.showing_page_name == "settings_page":
+                    if shutdown_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                        print('shutdown')
+                        if not shutdown_pressed:
+                            shutdown_button.label = CONFIRMATION_TEXT
+                            shutdown_pressed = True
+                        else:
+                            shutdown_button.label = SHUTDOWN_BUTTON_TEXT
+                            usb_cdc.data.write(json.dumps({'command':'shutdown'}) + '\n')
+                            shutdown_pressed = False
                     else:
                         shutdown_button.label = SHUTDOWN_BUTTON_TEXT
-                        usb_cdc.data.write(json.dumps({'command':'shutdown'}) + '\n')
                         shutdown_pressed = False
-                else:
-                    shutdown_button.label = SHUTDOWN_BUTTON_TEXT
-                    shutdown_pressed = False
+                        if devmode_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                            print('devmode on/off')
+                            toggle_dev_mode()
+                        elif back_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                            print('back')
+                            page_layout.show_page("main_page")
                 
             touch_context.touchEvent = EVT_NO
 
@@ -100,7 +108,7 @@ def duty_cycle_to_percent(duty_cycle):
 def percent_to_duty_cycle(percent):
     return int(percent / 100 * (2**16 - 1))
 
-async def render_display(page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button):
+async def render_display(page_layout, play_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button):
     displayio.release_displays()
 
     pwm = pwmio.PWMOut(TFT_LED)
@@ -159,6 +167,8 @@ async def render_display(page_layout, play_button, shutdown_button, devmode_butt
 
     main_group.append(text_group)
     main_group.append(play_button)
+    main_group.append(vol_minus_button)
+    main_group.append(vol_plus_button)
     main_group.append(settings_button)
 
     iterations_without_update = 0
@@ -266,6 +276,8 @@ async def main():
     page_layout = PageLayout(x=0, y=0)
 
     play_button = create_button(125, 95, PLAY_TEXT)
+    vol_minus_button = create_button(45, 95, "VOL-")
+    vol_plus_button = create_button(205, 95, "VOL+")
     settings_button = create_button(240, 180, "SETTINGS")
 
     shutdown_button = create_button(135, 90, SHUTDOWN_BUTTON_TEXT)
@@ -273,8 +285,8 @@ async def main():
     devmode_text = "DEVMODE OFF" if dev_mode_enabled() else "DEVMODE ON"
     devmode_button = create_button(135, 10, devmode_text)
 
-    handle_touch_task = asyncio.create_task(handle_touch(touch_context, page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button))
-    render_display_task = asyncio.create_task(render_display(page_layout, play_button, shutdown_button, devmode_button, settings_button, back_button))
+    handle_touch_task = asyncio.create_task(handle_touch(touch_context, page_layout, play_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button))
+    render_display_task = asyncio.create_task(render_display(page_layout, play_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button))
     await asyncio.gather(handle_touch_task, render_display_task)
 
 asyncio.run(main())
