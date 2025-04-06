@@ -16,14 +16,16 @@ Software components:
 
 Components are connected using USB CDC serial port
 
-## Feature roadmap
-- [x] Clock
-- [x] Currently played music/other media
-- [x] CPU and RAM usage
-- [x] Play/Pause button
-- [x] Shutdown computer button
-- [x] TFT screen brightness adjustment
-- [ ] Media buttons beautifying and enhancements (volume up/down)
+## Features
+- Clock
+- Currently played music/other media
+- CPU and RAM usage
+- Media buttons: Play/Pause, Volume up/down
+- Shutdown computer button
+- Settings
+    - TFT screen brightness adjustment
+    - Enabling dev mode (visibility of CIRCUITPY drive)
+    - Restarting board in UF2 mode - for dumping Pico memory as uf2 file
 
 ## Installation on Raspberry Pi Pico
 

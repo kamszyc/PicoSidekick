@@ -15,6 +15,7 @@ import json
 from adafruit_display_text import label, scrolling_label
 import adafruit_ili9341
 from adafruit_button import Button
+from adafruit_button.sprite_button import SpriteButton
 from adafruit_display_shapes.rect import Rect
 from adafruit_displayio_layout.layouts.page_layout import PageLayout
 from pinout import *
@@ -25,7 +26,7 @@ CONFIRMATION_TEXT = "SURE?"
 PLAY_TEXT = "PLAY"
 PAUSE_TEXT = "PAUSE"
 
-async def handle_touch(touch_context, page_layout, play_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button):
+async def handle_touch(touch_context, page_layout, play_button, pause_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button):
     cc = ConsumerControl(usb_hid.devices)
     shutdown_pressed = False
     while True:
@@ -43,7 +44,7 @@ async def handle_touch(touch_context, page_layout, play_button, vol_minus_button
                 print('ev PenUp - ')
 
                 if page_layout.showing_page_name == "main_page":
-                    if play_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                    if play_button.contains((touch_context.touchedY, touch_context.touchedX)) or pause_button.contains((touch_context.touchedY, touch_context.touchedX)):
                         print('play/pause')
                         cc.send(ConsumerControlCode.PLAY_PAUSE)
                     elif vol_minus_button.contains((touch_context.touchedY, touch_context.touchedX)):
@@ -108,7 +109,7 @@ def duty_cycle_to_percent(duty_cycle):
 def percent_to_duty_cycle(percent):
     return int(percent / 100 * (2**16 - 1))
 
-async def render_display(page_layout, play_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button):
+async def render_display(page_layout, play_button, pause_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button):
     displayio.release_displays()
 
     pwm = pwmio.PWMOut(TFT_LED)
@@ -167,6 +168,7 @@ async def render_display(page_layout, play_button, vol_minus_button, vol_plus_bu
 
     main_group.append(text_group)
     main_group.append(play_button)
+    main_group.append(pause_button)
     main_group.append(vol_minus_button)
     main_group.append(vol_plus_button)
     main_group.append(settings_button)
@@ -189,14 +191,19 @@ async def render_display(page_layout, play_button, vol_minus_button, vol_plus_bu
                 if not is_media_active:
                     if play_button in main_group:
                         main_group.remove(play_button)
+                    if pause_button in main_group:
+                        main_group.remove(pause_button)
                 else:
-                    if play_button not in main_group:
-                        main_group.append(play_button)
-
-                if is_playing:
-                    play_button.label = PAUSE_TEXT
-                else:
-                    play_button.label = PLAY_TEXT
+                    if is_playing:
+                        if play_button in main_group:
+                            main_group.remove(play_button)
+                        if pause_button not in main_group:
+                            main_group.append(pause_button)   
+                    else:
+                        if pause_button in main_group:
+                            main_group.remove(pause_button)
+                        if play_button not in main_group:
+                            main_group.append(play_button)
 
                 if request_artist_val is None and request_title_val is None:
                     music_label.text = IDLE_MUSIC
@@ -257,7 +264,7 @@ def apply_settings(pwm, updated_settings):
         if reset_needed:
             microcontroller.reset()
 
-def create_button(x, y, label):
+def create_text_button(x, y, label):
     return Button(
         x=x,
         y=y,
@@ -270,23 +277,34 @@ def create_button(x, y, label):
         label_color=0x000000,
     )
 
+def create_sprite_button(x, y, png_name):
+    return SpriteButton(
+        x=x,
+        y=y,
+        width=48,
+        height=48,
+        bmp_path=f'pngs/{png_name}.png',
+        transparent_index=0,
+    )
+
 async def main():
     touch_context = TouchContext()
     
     page_layout = PageLayout(x=0, y=0)
 
-    play_button = create_button(125, 95, PLAY_TEXT)
-    vol_minus_button = create_button(45, 95, "VOL-")
-    vol_plus_button = create_button(205, 95, "VOL+")
-    settings_button = create_button(240, 180, "SETTINGS")
+    play_button = create_sprite_button(136, 95, "play")
+    pause_button = create_sprite_button(136, 95, "pause")
+    vol_minus_button = create_sprite_button(68, 95, "volume_down")
+    vol_plus_button = create_sprite_button(204, 95, "volume_up")
+    settings_button = create_text_button(240, 180, "SETTINGS")
 
-    shutdown_button = create_button(135, 90, SHUTDOWN_BUTTON_TEXT)
-    back_button = create_button(135, 170, "BACK")
+    shutdown_button = create_text_button(135, 90, SHUTDOWN_BUTTON_TEXT)
+    back_button = create_text_button(135, 170, "BACK")
     devmode_text = "DEVMODE OFF" if dev_mode_enabled() else "DEVMODE ON"
-    devmode_button = create_button(135, 10, devmode_text)
+    devmode_button = create_text_button(135, 10, devmode_text)
 
-    handle_touch_task = asyncio.create_task(handle_touch(touch_context, page_layout, play_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button))
-    render_display_task = asyncio.create_task(render_display(page_layout, play_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button))
+    handle_touch_task = asyncio.create_task(handle_touch(touch_context, page_layout, play_button, pause_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button))
+    render_display_task = asyncio.create_task(render_display(page_layout, play_button, pause_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button))
     await asyncio.gather(handle_touch_task, render_display_task)
 
 asyncio.run(main())
