@@ -20,7 +20,7 @@ Components are connected using USB CDC serial port
 - Clock
 - Currently played music/other media
 - CPU and RAM usage
-- Media buttons: Play/Pause, Volume up/down
+- Media buttons: Play/Pause, Prev/next song, Volume up/down
 - Shutdown computer button
 - Settings
     - TFT screen brightness adjustment

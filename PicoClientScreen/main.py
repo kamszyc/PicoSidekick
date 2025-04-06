@@ -23,10 +23,8 @@ import pwmio
 
 SHUTDOWN_BUTTON_TEXT = "SHUTDOWN"
 CONFIRMATION_TEXT = "SURE?"
-PLAY_TEXT = "PLAY"
-PAUSE_TEXT = "PAUSE"
 
-async def handle_touch(touch_context, page_layout, play_button, pause_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button):
+async def handle_touch(touch_context, page_layout, play_button, pause_button, prev_button, next_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button):
     cc = ConsumerControl(usb_hid.devices)
     shutdown_pressed = False
     while True:
@@ -47,6 +45,12 @@ async def handle_touch(touch_context, page_layout, play_button, pause_button, vo
                     if play_button.contains((touch_context.touchedY, touch_context.touchedX)) or pause_button.contains((touch_context.touchedY, touch_context.touchedX)):
                         print('play/pause')
                         cc.send(ConsumerControlCode.PLAY_PAUSE)
+                    elif prev_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                        print('prev')
+                        cc.send(ConsumerControlCode.SCAN_PREVIOUS_TRACK)
+                    elif next_button.contains((touch_context.touchedY, touch_context.touchedX)):
+                        print('next')
+                        cc.send(ConsumerControlCode.SCAN_NEXT_TRACK)
                     elif vol_minus_button.contains((touch_context.touchedY, touch_context.touchedX)):
                         print('vol-')
                         cc.send(ConsumerControlCode.VOLUME_DECREMENT)
@@ -109,7 +113,7 @@ def duty_cycle_to_percent(duty_cycle):
 def percent_to_duty_cycle(percent):
     return int(percent / 100 * (2**16 - 1))
 
-async def render_display(page_layout, play_button, pause_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button):
+async def render_display(page_layout, play_button, pause_button, prev_button, next_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button):
     displayio.release_displays()
 
     pwm = pwmio.PWMOut(TFT_LED)
@@ -169,6 +173,8 @@ async def render_display(page_layout, play_button, pause_button, vol_minus_butto
     main_group.append(text_group)
     main_group.append(play_button)
     main_group.append(pause_button)
+    main_group.append(prev_button)
+    main_group.append(next_button)
     main_group.append(vol_minus_button)
     main_group.append(vol_plus_button)
     main_group.append(settings_button)
@@ -193,7 +199,15 @@ async def render_display(page_layout, play_button, pause_button, vol_minus_butto
                         main_group.remove(play_button)
                     if pause_button in main_group:
                         main_group.remove(pause_button)
+                    if prev_button in main_group:
+                        main_group.remove(prev_button)
+                    if next_button in main_group:
+                        main_group.remove(next_button)
                 else:
+                    if prev_button not in main_group:
+                        main_group.append(prev_button)
+                    if next_button not in main_group:
+                        main_group.append(next_button)
                     if is_playing:
                         if play_button in main_group:
                             main_group.remove(play_button)
@@ -294,8 +308,10 @@ async def main():
 
     play_button = create_sprite_button(136, 95, "play")
     pause_button = create_sprite_button(136, 95, "pause")
-    vol_minus_button = create_sprite_button(68, 95, "volume_down")
-    vol_plus_button = create_sprite_button(204, 95, "volume_up")
+    prev_button = create_sprite_button(78, 95, "previous")
+    next_button = create_sprite_button(194, 95, "next")
+    vol_minus_button = create_sprite_button(20, 95, "volume_down")
+    vol_plus_button = create_sprite_button(252, 95, "volume_up")
     settings_button = create_text_button(240, 180, "SETTINGS")
 
     shutdown_button = create_text_button(135, 90, SHUTDOWN_BUTTON_TEXT)
@@ -303,8 +319,8 @@ async def main():
     devmode_text = "DEVMODE OFF" if dev_mode_enabled() else "DEVMODE ON"
     devmode_button = create_text_button(135, 10, devmode_text)
 
-    handle_touch_task = asyncio.create_task(handle_touch(touch_context, page_layout, play_button, pause_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button))
-    render_display_task = asyncio.create_task(render_display(page_layout, play_button, pause_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button))
+    handle_touch_task = asyncio.create_task(handle_touch(touch_context, page_layout, play_button, pause_button, prev_button, next_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button))
+    render_display_task = asyncio.create_task(render_display(page_layout, play_button, pause_button, prev_button, next_button, vol_minus_button, vol_plus_button, shutdown_button, devmode_button, settings_button, back_button))
     await asyncio.gather(handle_touch_task, render_display_task)
 
 asyncio.run(main())
