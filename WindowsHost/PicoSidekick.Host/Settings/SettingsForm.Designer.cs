@@ -34,8 +34,8 @@
             okButton = new Button();
             cancelButton = new Button();
             groupBox2 = new GroupBox();
-            trackBarBrightness = new TrackBar();
             label1 = new Label();
+            trackBarBrightness = new TrackBar();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBarBrightness).BeginInit();
@@ -45,9 +45,9 @@
             // 
             groupBox1.Controls.Add(restartInUf2ModeCheckbox);
             groupBox1.Controls.Add(devModeEnabledCheckbox);
-            groupBox1.Location = new Point(12, 110);
+            groupBox1.Location = new Point(12, 102);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(317, 78);
+            groupBox1.Size = new Size(317, 82);
             groupBox1.TabIndex = 0;
             groupBox1.TabStop = false;
             groupBox1.Text = "Dev settings";
@@ -74,7 +74,8 @@
             // 
             // okButton
             // 
-            okButton.Location = new Point(85, 207);
+            okButton.Anchor = AnchorStyles.Bottom;
+            okButton.Location = new Point(85, 203);
             okButton.Name = "okButton";
             okButton.Size = new Size(75, 23);
             okButton.TabIndex = 1;
@@ -84,7 +85,8 @@
             // 
             // cancelButton
             // 
-            cancelButton.Location = new Point(166, 207);
+            cancelButton.Anchor = AnchorStyles.Bottom;
+            cancelButton.Location = new Point(166, 203);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(75, 23);
             cancelButton.TabIndex = 2;
@@ -98,18 +100,10 @@
             groupBox2.Location = new Point(12, 12);
             groupBox2.Name = "groupBox2";
             groupBox2.RightToLeft = RightToLeft.No;
-            groupBox2.Size = new Size(317, 92);
+            groupBox2.Size = new Size(317, 84);
             groupBox2.TabIndex = 3;
             groupBox2.TabStop = false;
             groupBox2.Text = "General";
-            // 
-            // trackBarBrightness
-            // 
-            trackBarBrightness.Location = new Point(6, 37);
-            trackBarBrightness.Maximum = 100;
-            trackBarBrightness.Name = "trackBarBrightness";
-            trackBarBrightness.Size = new Size(305, 45);
-            trackBarBrightness.TabIndex = 0;
             // 
             // label1
             // 
@@ -120,13 +114,22 @@
             label1.TabIndex = 1;
             label1.Text = "Brightness";
             // 
+            // trackBarBrightness
+            // 
+            trackBarBrightness.Location = new Point(6, 37);
+            trackBarBrightness.Maximum = 100;
+            trackBarBrightness.Name = "trackBarBrightness";
+            trackBarBrightness.Size = new Size(305, 45);
+            trackBarBrightness.TabIndex = 0;
+            trackBarBrightness.TickStyle = TickStyle.None;
+            // 
             // SettingsForm
             // 
             AcceptButton = okButton;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = cancelButton;
-            ClientSize = new Size(341, 242);
+            ClientSize = new Size(341, 238);
             Controls.Add(groupBox2);
             Controls.Add(cancelButton);
             Controls.Add(okButton);
