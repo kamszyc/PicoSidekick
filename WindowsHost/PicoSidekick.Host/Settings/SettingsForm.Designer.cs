@@ -45,7 +45,7 @@
             // 
             groupBox1.Controls.Add(restartInUf2ModeCheckbox);
             groupBox1.Controls.Add(devModeEnabledCheckbox);
-            groupBox1.Location = new Point(12, 102);
+            groupBox1.Location = new Point(12, 113);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(317, 82);
             groupBox1.TabIndex = 0;
@@ -75,7 +75,7 @@
             // okButton
             // 
             okButton.Anchor = AnchorStyles.Bottom;
-            okButton.Location = new Point(85, 203);
+            okButton.Location = new Point(85, 210);
             okButton.Name = "okButton";
             okButton.Size = new Size(75, 23);
             okButton.TabIndex = 1;
@@ -86,7 +86,7 @@
             // cancelButton
             // 
             cancelButton.Anchor = AnchorStyles.Bottom;
-            cancelButton.Location = new Point(166, 203);
+            cancelButton.Location = new Point(166, 210);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(75, 23);
             cancelButton.TabIndex = 2;
@@ -100,7 +100,7 @@
             groupBox2.Location = new Point(12, 12);
             groupBox2.Name = "groupBox2";
             groupBox2.RightToLeft = RightToLeft.No;
-            groupBox2.Size = new Size(317, 84);
+            groupBox2.Size = new Size(317, 95);
             groupBox2.TabIndex = 3;
             groupBox2.TabStop = false;
             groupBox2.Text = "General";
@@ -108,7 +108,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(16, 19);
+            label1.Location = new Point(16, 27);
             label1.Name = "label1";
             label1.Size = new Size(62, 15);
             label1.TabIndex = 1;
@@ -116,7 +116,7 @@
             // 
             // trackBarBrightness
             // 
-            trackBarBrightness.Location = new Point(6, 37);
+            trackBarBrightness.Location = new Point(6, 45);
             trackBarBrightness.Maximum = 100;
             trackBarBrightness.Name = "trackBarBrightness";
             trackBarBrightness.Size = new Size(305, 45);
@@ -129,7 +129,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = cancelButton;
-            ClientSize = new Size(341, 238);
+            ClientSize = new Size(341, 245);
             Controls.Add(groupBox2);
             Controls.Add(cancelButton);
             Controls.Add(okButton);
