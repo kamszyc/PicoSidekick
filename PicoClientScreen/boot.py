@@ -6,11 +6,12 @@ import storage
 
 usb_midi.disable()
 
-usb_cdc.enable(console=True, data=True)
+dev_mode = dev_mode_enabled()
+usb_cdc.enable(console=dev_mode, data=True)
 
 usb_hid.enable((usb_hid.Device.CONSUMER_CONTROL,))
 
-if dev_mode_enabled():
+if dev_mode:
   storage.enable_usb_drive()
 else:
   storage.disable_usb_drive()
