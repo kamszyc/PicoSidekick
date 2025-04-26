@@ -22,7 +22,11 @@ namespace PicoSidekick.Host
             this.formProvider = formProvider;
             this.serviceScopeFactory = serviceScopeFactory;
             this.scope = serviceScopeFactory.CreateScope();
+            CreateTrayIcon();
+        }
 
+        private void CreateTrayIcon()
+        {
             var trayIcon = new NotifyIcon()
             {
                 Icon = new Icon("Pi.ico"),
@@ -35,7 +39,7 @@ namespace PicoSidekick.Host
                 HandleSettingsClick();
             };
 
-            ToolStripMenuItem settingsItem = new()
+            var settingsItem = new ToolStripMenuItem()
             {
                 Text = "Settings"
             };
@@ -43,9 +47,8 @@ namespace PicoSidekick.Host
             {
                 HandleSettingsClick();
             };
-            trayIcon.ContextMenuStrip.Items.Add(settingsItem);
 
-            ToolStripMenuItem exitItem = new()
+            var exitItem = new ToolStripMenuItem()
             {
                 Text = "Exit"
             };
@@ -53,6 +56,8 @@ namespace PicoSidekick.Host
             {
                 Application.Exit();
             };
+
+            trayIcon.ContextMenuStrip.Items.Add(settingsItem);
             trayIcon.ContextMenuStrip.Items.Add(exitItem);
         }
 
