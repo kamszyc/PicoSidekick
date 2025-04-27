@@ -4,7 +4,7 @@
 
 DIY helper screen for Windows PC.
 
-![Sidekick photo](sidekick.jpg)
+![Sidekick photo](images/sidekick.jpg)
 
 Built with:
 - Raspberry Pi Pico
@@ -22,10 +22,14 @@ Components are connected using USB CDC serial port
 - CPU and RAM usage
 - Media buttons: Play/Pause, Prev/next song, Volume up/down
 - Shutdown computer button
-- Settings
+- Settings available from tray icon on Windows host machine
     - TFT screen brightness adjustment
     - Enabling dev mode (visibility of CIRCUITPY drive)
     - Restarting board in UF2 mode - for dumping Pico memory as uf2 file
+
+
+![Settings](images/settings.png) \
+![Context menu](images/context_menu.png)
 
 ## Installation on Raspberry Pi Pico
 
