@@ -126,7 +126,7 @@ namespace PicoSidekick.Host.Serial
 
         private SerialPort OpenPort()
         {
-            string portName = ComDeviceFinder.GetCircuitPythonDataSerialPortName();
+            string portName = SerialDeviceFinder.GetCircuitPythonDataSerialPortName();
             if (portName == null)
             {
                 _settingsService.DisableChanges();

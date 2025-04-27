@@ -5,9 +5,9 @@ using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PicoSidekick.Host
+namespace PicoSidekick.Host.Serial
 {
-    internal static class ComDeviceFinder
+    internal static class SerialDeviceFinder
     {
         public static string GetCircuitPythonDataSerialPortName()
         {
