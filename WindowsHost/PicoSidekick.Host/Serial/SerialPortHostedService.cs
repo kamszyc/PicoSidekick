@@ -17,13 +17,14 @@ using System.Threading.Tasks;
 using Windows.Media.Control;
 using WindowsMediaController;
 
-namespace PicoSidekick.Host
+namespace PicoSidekick.Host.Serial
 {
     public class SerialPortHostedService : BackgroundService
     {
         private readonly MediaService _mediaService;
         private readonly PerformanceService _performanceService;
         private readonly SettingsService _settingsService;
+        private readonly SerialPortStatusService _serialPortStatusService;
         private readonly ILogger<SerialPortHostedService> _logger;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
@@ -31,11 +32,13 @@ namespace PicoSidekick.Host
             MediaService mediaService,
             PerformanceService performanceService,
             SettingsService settingsService,
+            SerialPortStatusService serialPortStatusService,
             ILogger<SerialPortHostedService> logger)
         {
             _mediaService = mediaService;
             _performanceService = performanceService;
             _settingsService = settingsService;
+            _serialPortStatusService = serialPortStatusService;
             _logger = logger;
             _jsonSerializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
         }
@@ -59,6 +62,8 @@ namespace PicoSidekick.Host
                         }
                     }
 
+                    _serialPortStatusService.SetStatus(new SerialPortStatus(true, port.PortName));
+
                     var perfReading = _performanceService.Read();
                     var mediaReading = await _mediaService.Read();
 
@@ -71,6 +76,7 @@ namespace PicoSidekick.Host
                 catch (Exception e)
                 {
                     _settingsService.DisableChanges();
+                    _serialPortStatusService.SetStatus(new SerialPortStatus(false, null));
                     _logger.LogWarning(e, "Error, continuing...");
                 }
 
@@ -124,6 +130,7 @@ namespace PicoSidekick.Host
             if (portName == null)
             {
                 _settingsService.DisableChanges();
+                _serialPortStatusService.SetStatus(new SerialPortStatus(false, null));
                 _logger.LogInformation("No compatible Circuit Python serial port found");
                 return null;
             }

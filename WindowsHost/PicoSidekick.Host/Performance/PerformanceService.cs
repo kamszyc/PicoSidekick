@@ -10,27 +10,27 @@ namespace PicoSidekick.Host.Performance
 {
     public class PerformanceService
     {
-        private readonly PerformanceCounter cpuCounter;
-        private readonly PerformanceCounter availableRamCounter;
-        private readonly float totalRamInGigabytes;
-        private readonly float totalRamInGigabytesRounded;
+        private readonly PerformanceCounter _cpuCounter;
+        private readonly PerformanceCounter _availableRamCounter;
+        private readonly float _totalRamInGigabytes;
+        private readonly float _totalRamInGigabytesRounded;
 
-        public float TotalRamInGigabytes => totalRamInGigabytesRounded;
+        public float TotalRamInGigabytes => _totalRamInGigabytesRounded;
 
         public PerformanceService()
         {
             var computerInfo = new ComputerInfo();
 
-            totalRamInGigabytes = BytesToGigabytes(computerInfo.TotalPhysicalMemory);
-            totalRamInGigabytesRounded = (float)Math.Round(totalRamInGigabytes, 1);
-            cpuCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total");
-            availableRamCounter = new PerformanceCounter("Memory", "Available Bytes");
+            _totalRamInGigabytes = BytesToGigabytes(computerInfo.TotalPhysicalMemory);
+            _totalRamInGigabytesRounded = (float)Math.Round(_totalRamInGigabytes, 1);
+            _cpuCounter = new PerformanceCounter("Processor Information", "% Processor Utility", "_Total");
+            _availableRamCounter = new PerformanceCounter("Memory", "Available Bytes");
         }
 
         public PerformanceReading Read()
         {
-            float cpu = (float)Math.Round(cpuCounter.NextValue());
-            float usedRamInGigabytes = CalculateUsedRam(totalRamInGigabytes, availableRamCounter);
+            float cpu = (float)Math.Round(_cpuCounter.NextValue());
+            float usedRamInGigabytes = CalculateUsedRam(_totalRamInGigabytes, _availableRamCounter);
             return new PerformanceReading { Cpu = cpu, UsedRamInGigabytes = usedRamInGigabytes };
         }
 

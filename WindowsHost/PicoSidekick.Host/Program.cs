@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PicoSidekick.Host.Media;
 using PicoSidekick.Host.Performance;
+using PicoSidekick.Host.Serial;
 using PicoSidekick.Host.Settings;
 using System.Diagnostics;
 using System.IO.Ports;
@@ -35,6 +36,7 @@ namespace PicoSidekick.Host
             builder.Services.AddSingleton<PerformanceService>();
             builder.Services.AddSingleton<MediaService>();
             builder.Services.AddSingleton<SettingsService>();
+            builder.Services.AddSingleton<SerialPortStatusService>();
             builder.Services.AddScoped<SettingsForm>();
 
             var app = builder.Build();

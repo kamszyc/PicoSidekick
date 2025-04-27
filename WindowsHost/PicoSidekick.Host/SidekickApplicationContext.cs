@@ -1,27 +1,35 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using PicoSidekick.Host.Serial;
 using PicoSidekick.Host.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using WindowsFormsLifetime;
 
 namespace PicoSidekick.Host
 {
     public class SidekickApplicationContext : ApplicationContext
     {
-        private readonly SettingsService settingsService;
-        private readonly IFormProvider formProvider;
-        private readonly IServiceScopeFactory serviceScopeFactory;
-        private IServiceScope scope;
+        private readonly SettingsService _settingsService;
+        private readonly SerialPortStatusService _serialPortStatusService;
+        private readonly IFormProvider _formProvider;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private IServiceScope _scope;
 
-        public SidekickApplicationContext(SettingsService settingsService, IFormProvider formProvider, IServiceScopeFactory serviceScopeFactory)
+        public SidekickApplicationContext(
+            SettingsService settingsService,
+            SerialPortStatusService serialPortStatusService,
+            IFormProvider formProvider,
+            IServiceScopeFactory serviceScopeFactory)
         {
-            this.settingsService = settingsService;
-            this.formProvider = formProvider;
-            this.serviceScopeFactory = serviceScopeFactory;
-            this.scope = serviceScopeFactory.CreateScope();
+            _settingsService = settingsService;
+            _serialPortStatusService = serialPortStatusService;
+            _formProvider = formProvider;
+            _serviceScopeFactory = serviceScopeFactory;
+            _scope = serviceScopeFactory.CreateScope();
             CreateTrayIcon();
         }
 
@@ -37,6 +45,13 @@ namespace PicoSidekick.Host
             trayIcon.DoubleClick += (sender, e) =>
             {
                 HandleSettingsClick();
+            };
+
+            var serialPortStatus = _serialPortStatusService.GetStatus();
+            var connectionItem = new ToolStripMenuItem()
+            {
+                Text = GetConnectionItemText(serialPortStatus),
+                Enabled = false,
             };
 
             var settingsItem = new ToolStripMenuItem()
@@ -57,13 +72,26 @@ namespace PicoSidekick.Host
                 Application.Exit();
             };
 
+            trayIcon.ContextMenuStrip.Opening += (sender, e) =>
+            {
+                var status = _serialPortStatusService.GetStatus();
+                connectionItem.Text = GetConnectionItemText(status);
+                settingsItem.Enabled = status.IsConnected;
+            };
+
+            trayIcon.ContextMenuStrip.Items.Add(connectionItem);
             trayIcon.ContextMenuStrip.Items.Add(settingsItem);
             trayIcon.ContextMenuStrip.Items.Add(exitItem);
         }
 
+        private static string GetConnectionItemText(SerialPortStatus serialPortStatus)
+        {
+            return !serialPortStatus.IsConnected ? "Disconnected" : $"Connected on {serialPortStatus.PortName} port";
+        }
+
         private IServiceScope HandleSettingsClick()
         {
-            var form = formProvider.GetForm<SettingsForm>(scope);
+            var form = _formProvider.GetForm<SettingsForm>(_scope);
             if (form.CanFocus)
             {
                 form.WindowState = FormWindowState.Normal;
@@ -74,17 +102,17 @@ namespace PicoSidekick.Host
                 try
                 {
                     if (form.ShowDialog() == DialogResult.OK)
-                        settingsService.SetFromSettingsForm(form.Settings);
+                        _settingsService.SetFromSettingsForm(form.Settings);
                 }
                 finally
                 {
                     form.Dispose();
-                    scope.Dispose();
-                    scope = serviceScopeFactory.CreateScope();
+                    _scope.Dispose();
+                    _scope = _serviceScopeFactory.CreateScope();
                 }
             }
 
-            return scope;
+            return _scope;
         }
     }
 }
