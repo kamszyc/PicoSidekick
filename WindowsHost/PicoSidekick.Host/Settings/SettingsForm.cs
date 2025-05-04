@@ -31,6 +31,7 @@ namespace PicoSidekick.Host.Settings
             devModeEnabledCheckbox.Checked = Settings.DevModeEnabled;
             restartInUf2ModeCheckbox.Checked = Settings.RestartInUf2Mode;
             trackBarBrightness.Value = Settings.Brightness;
+            rotateDisplayCheckbox.Checked = Settings.DisplayRotated;
             EnableDisableControls(!settingsService.SettingsLocked);
 
             settingsService.ChangesDisabled += SettingsService_ChangesDisabled;
@@ -49,6 +50,7 @@ namespace PicoSidekick.Host.Settings
                 restartInUf2ModeCheckbox.Enabled = enable;
                 trackBarBrightness.Enabled = enable;
                 okButton.Enabled = enable;
+                rotateDisplayCheckbox.Enabled = enable;
             });
         }
 
@@ -58,7 +60,8 @@ namespace PicoSidekick.Host.Settings
             {
                 DevModeEnabled = devModeEnabledCheckbox.Checked,
                 RestartInUf2Mode = restartInUf2ModeCheckbox.Checked,
-                Brightness = trackBarBrightness.Value
+                Brightness = trackBarBrightness.Value,
+                DisplayRotated = rotateDisplayCheckbox.Checked,
             };
             DialogResult = DialogResult.OK;
             Close();

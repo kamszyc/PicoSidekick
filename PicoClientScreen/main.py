@@ -105,7 +105,15 @@ def create_settings_page(shutdown_button, devmode_button, back_button):
 
 def send_current_settings(pwm):
     brightness = duty_cycle_to_percent(pwm.duty_cycle)
-    usb_cdc.data.write(json.dumps({'command':'settings', 'dev_mode_enabled' : dev_mode_enabled(), 'brightness' : brightness}) + '\n')
+    rotated = display_rotated()
+    usb_cdc.data.write(
+        json.dumps(
+        {
+            'command':'settings',
+            'dev_mode_enabled' : dev_mode_enabled(),
+            'brightness' : brightness,
+            'display_rotated' : rotated
+        }) + '\n')
 
 def duty_cycle_to_percent(duty_cycle):
     return int(duty_cycle / (2**16 - 1) * 100)
@@ -128,7 +136,8 @@ async def render_display(page_layout, play_button, pause_button, prev_button, ne
         display_bus,
         width=TFT_WIDTH,
         height=TFT_HEIGHT,
-        auto_refresh=False)
+        auto_refresh=False,
+        rotation=180 if display_rotated() else 0)
 
     root = displayio.Group()
     display.root_group = root
@@ -187,7 +196,7 @@ async def render_display(page_layout, play_button, pause_button, prev_button, ne
                 request = json.loads(data_in)
 
                 updated_settings = request["updated_settings"]
-                apply_settings(pwm, updated_settings)
+                apply_settings(pwm, display, updated_settings)
 
                 request_artist_val = request["artist"]
                 request_title_val = request["title"]
@@ -260,17 +269,23 @@ async def render_display(page_layout, play_button, pause_button, prev_button, ne
 
         await asyncio.sleep(0.1)
 
-def apply_settings(pwm, updated_settings):
+def apply_settings(pwm, display, updated_settings):
     if updated_settings:
         brightness_percent = int(updated_settings["brightness"])
         brightness_duty_cycle = int(brightness_percent / 100 * (2**16 - 1))
         pwm.duty_cycle = brightness_duty_cycle
 
+        display_rotated = updated_settings["display_rotated"]
+        if display_rotated:
+            display.rotation = 180
+        else:
+            display.rotation = 0
+
         dev_mode_enabled = updated_settings["dev_mode_enabled"]
         restart_in_uf2_mode =  updated_settings["restart_in_uf2_mode"]
         reset_needed = dev_mode_setting_changed(dev_mode_enabled) or restart_in_uf2_mode
 
-        save_settings(dev_mode_enabled, brightness_percent)
+        save_settings(dev_mode_enabled, brightness_percent, display_rotated)
 
         if updated_settings["restart_in_uf2_mode"]:
             microcontroller.on_next_reset(microcontroller.RunMode.UF2)

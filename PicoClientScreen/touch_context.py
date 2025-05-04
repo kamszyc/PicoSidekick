@@ -1,4 +1,5 @@
 from micropython import const
+from config import display_rotated
 from constants import TFT_HEIGHT, TFT_WIDTH
 from xpt2046 import Touch
 import busio
@@ -85,6 +86,10 @@ class TouchContext:
             return None
 
         normalizedX, normalizedY = self.touch.normalize(*xy)
+        if display_rotated():
+            normalizedX = scrWidth - normalizedX
+            normalizedY = scrHeight - normalizedY
+
         if (normalizedX < 0 or normalizedX >= scrWidth
                 or normalizedY < 0 or normalizedY >= scrHeight):
                 return None

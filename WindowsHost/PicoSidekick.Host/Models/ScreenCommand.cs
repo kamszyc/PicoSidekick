@@ -17,6 +17,8 @@ namespace PicoSidekick.Host.Models
 
         public int Brightness { get; set; }
 
+        public bool DisplayRotated { get; set; }
+
         public bool IsShutdown()
         {
             return Command == ShutdownCommand;

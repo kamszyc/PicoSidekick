@@ -35,6 +35,7 @@
             okButton = new Button();
             cancelButton = new Button();
             groupBox2 = new GroupBox();
+            rotateDisplayCheckbox = new CheckBox();
             label1 = new Label();
             trackBarBrightness = new TrackBar();
             tooltip = new ToolTip(components);
@@ -45,10 +46,10 @@
             // 
             // groupBox1
             // 
-            groupBox1.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Anchor = AnchorStyles.Bottom;
             groupBox1.Controls.Add(restartInUf2ModeCheckbox);
             groupBox1.Controls.Add(devModeEnabledCheckbox);
-            groupBox1.Location = new Point(12, 113);
+            groupBox1.Location = new Point(12, 170);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(331, 82);
             groupBox1.TabIndex = 0;
@@ -80,7 +81,7 @@
             // okButton
             // 
             okButton.Anchor = AnchorStyles.Bottom;
-            okButton.Location = new Point(92, 210);
+            okButton.Location = new Point(92, 258);
             okButton.Name = "okButton";
             okButton.Size = new Size(75, 23);
             okButton.TabIndex = 1;
@@ -91,7 +92,7 @@
             // cancelButton
             // 
             cancelButton.Anchor = AnchorStyles.Bottom;
-            cancelButton.Location = new Point(173, 210);
+            cancelButton.Location = new Point(173, 258);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(75, 23);
             cancelButton.TabIndex = 2;
@@ -100,16 +101,27 @@
             // 
             // groupBox2
             // 
-            groupBox2.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox2.Controls.Add(rotateDisplayCheckbox);
             groupBox2.Controls.Add(label1);
             groupBox2.Controls.Add(trackBarBrightness);
-            groupBox2.Location = new Point(12, 12);
+            groupBox2.Location = new Point(12, 18);
             groupBox2.Name = "groupBox2";
             groupBox2.RightToLeft = RightToLeft.No;
-            groupBox2.Size = new Size(331, 95);
+            groupBox2.Size = new Size(331, 135);
             groupBox2.TabIndex = 3;
             groupBox2.TabStop = false;
             groupBox2.Text = "General";
+            // 
+            // rotateDisplayCheckbox
+            // 
+            rotateDisplayCheckbox.AutoSize = true;
+            rotateDisplayCheckbox.Location = new Point(16, 96);
+            rotateDisplayCheckbox.Name = "rotateDisplayCheckbox";
+            rotateDisplayCheckbox.Size = new Size(165, 19);
+            rotateDisplayCheckbox.TabIndex = 2;
+            rotateDisplayCheckbox.Text = "Rotate display 180 degrees";
+            rotateDisplayCheckbox.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -136,7 +148,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = cancelButton;
-            ClientSize = new Size(355, 245);
+            ClientSize = new Size(355, 293);
             Controls.Add(groupBox2);
             Controls.Add(cancelButton);
             Controls.Add(okButton);
@@ -165,5 +177,6 @@
         private TrackBar trackBarBrightness;
         private Label label1;
         private ToolTip tooltip;
+        private CheckBox rotateDisplayCheckbox;
     }
 }
