@@ -24,6 +24,7 @@ Components are connected using USB CDC serial port
 - Shutdown computer button
 - Settings available from tray icon on Windows host machine
     - TFT screen brightness adjustment
+    - Rotating screen content 180 degrees
     - Enabling dev mode (CIRCUITPY drive and console serial port)
     - Restarting board in UF2 mode - for dumping Pico memory as uf2 file
 
