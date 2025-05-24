@@ -26,7 +26,7 @@ Components are connected using USB CDC serial port
     - TFT screen brightness adjustment
     - Rotating screen content 180 degrees
     - Enabling dev mode (CIRCUITPY drive and console serial port)
-    - Restarting board in UF2 mode - for dumping Pico memory as uf2 file
+    - Restarting board in UF2 mode - for dumping Pico memory as uf2 file (using [picotool](https://github.com/raspberrypi/picotool))
 
 
 ![Settings](images/settings.png) \
