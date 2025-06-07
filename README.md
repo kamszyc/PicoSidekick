@@ -52,7 +52,7 @@ Components are connected using USB CDC serial port
 ## Preparing Pico uf2 release
 1. Connect Pi Pico in UF2 mode to computer
     - by connecting to USB while holding **BOOTSEL** button
-    - or using by **Restart in UF2 mode** Pico Sidekick setting
+    - or using **Restart in UF2 mode** Pico Sidekick setting
 2. Run
    ```bash
    picotool save --all pico-sidekick.uf2
