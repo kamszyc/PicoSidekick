@@ -26,7 +26,7 @@ Components are connected using USB CDC serial port
     - TFT screen brightness adjustment
     - Rotating screen content 180 degrees
     - Enabling dev mode (**CIRCUITPY** drive and console serial port)
-    - Restarting board in UF2 mode - for dumping Pico memory as uf2 file (using [picotool](https://github.com/raspberrypi/picotool))
+    - Restarting board in UF2 mode - e.g. [for dumping Pico memory as uf2 file](#preparing-pico-uf2-release)
 
 
 ![Settings](images/settings.png) \
@@ -53,7 +53,7 @@ Components are connected using USB CDC serial port
 1. Connect Pi Pico in UF2 mode to computer
     - by connecting to USB while holding **BOOTSEL** button
     - or using **Restart in UF2 mode** Pico Sidekick setting
-2. Run
+2. Run [picotool](https://github.com/raspberrypi/picotool)
    ```bash
    picotool save --all pico-sidekick.uf2
    ```
