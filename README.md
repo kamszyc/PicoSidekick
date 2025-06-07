@@ -25,7 +25,7 @@ Components are connected using USB CDC serial port
 - Settings available from tray icon on Windows host machine
     - TFT screen brightness adjustment
     - Rotating screen content 180 degrees
-    - Enabling dev mode (CIRCUITPY drive and console serial port)
+    - Enabling dev mode (**CIRCUITPY** drive and console serial port)
     - Restarting board in UF2 mode - for dumping Pico memory as uf2 file (using [picotool](https://github.com/raspberrypi/picotool))
 
 
@@ -35,19 +35,25 @@ Components are connected using USB CDC serial port
 ## Installation on Raspberry Pi Pico
 
 ### From released uf2 file
-1. Get `.uf2` file from [latest release](https://github.com/kamszyc/PicoSidekick/releases/latest)
-2. Hold `BOOTSEL` button and connect Pi to PC
-3. Put `.uf2` file on `RPI-RP2` drive
+1. Get **.uf2** file from [latest release](https://github.com/kamszyc/PicoSidekick/releases/latest)
+2. Hold **BOOTSEL** button and connect Pi to PC
+3. Put **.uf2** file on **RPI-RP2** drive
 
 ### From scratch
 1. Install CircuitPython on Raspberry Pi Pico \
 https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython
-2. Connect Pico to USB port, `CIRCUITPY` drive should appear
-3. Install Adafruit libraries. This can be done using `circup` utility \
+2. Connect Pico to USB port, **CIRCUITPY** drive should appear
+3. Install Adafruit libraries. This can be done using **circup** utility \
 https://github.com/adafruit/circup \
 `circup install adafruit_button adafruit_hid asyncio adafruit_display_text adafruit_ili9341 adafruit_displayio_layout`
-4. Remove preinstalled `code.py` file and put files from `PicoClientScreen` directory into `CIRCUITPY` drive
+4. Remove preinstalled **code.py** file and put files from **PicoClientScreen** directory into **CIRCUITPY** drive
 5. Disconnect Pico from USB and connect it again
+
+## Preparing Pico uf2 release
+1. Connect Pi Pico in UF2 mode to computer
+    - by connecting to USB while holding **BOOTSEL** button
+    - or using by **Restart in UF2 mode** Pico Sidekick setting
+2. Run `picotool save --all pico-sidekick.uf2`
 
 ## Pinout
 
