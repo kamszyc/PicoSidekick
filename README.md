@@ -40,12 +40,12 @@ Components are connected using USB CDC serial port
 3. Put **.uf2** file on **RPI-RP2** drive
 
 ### From scratch
-1. Install CircuitPython on Raspberry Pi Pico \
-https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython
+1. [Install CircuitPython](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython)
 2. Connect Pico to USB port, **CIRCUITPY** drive should appear
-3. Install Adafruit libraries. This can be done using **circup** utility \
-https://github.com/adafruit/circup \
-`circup install adafruit_button adafruit_hid asyncio adafruit_display_text adafruit_ili9341 adafruit_displayio_layout`
+3. Install Adafruit libraries. This can be done using [**circup**](https://github.com/adafruit/circup)
+   ```bash
+   circup install adafruit_button adafruit_hid asyncio adafruit_display_text adafruit_ili9341 adafruit_displayio_layout
+   ```
 4. Remove preinstalled **code.py** file and put files from **PicoClientScreen** directory into **CIRCUITPY** drive
 5. Disconnect Pico from USB and connect it again
 
@@ -53,7 +53,10 @@ https://github.com/adafruit/circup \
 1. Connect Pi Pico in UF2 mode to computer
     - by connecting to USB while holding **BOOTSEL** button
     - or using by **Restart in UF2 mode** Pico Sidekick setting
-2. Run `picotool save --all pico-sidekick.uf2`
+2. Run
+   ```bash
+   picotool save --all pico-sidekick.uf2
+   ```
 
 ## Pinout
 
