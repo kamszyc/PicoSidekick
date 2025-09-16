@@ -2,7 +2,7 @@
 
 ![Build Host](https://github.com/kamszyc/PicoSidekick/actions/workflows/build-host-and-release.yml/badge.svg)
 
-DIY helper screen for Windows PC.
+DIY USB screen for Windows PC.
 
 ![Sidekick photo](images/sidekick.jpg)
 
