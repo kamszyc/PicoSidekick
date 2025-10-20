@@ -11,7 +11,7 @@ Built with:
 - cheap 2.8" TFT touch screen, with ILI9341 and XPT2046 controllers and 240x320 resolution
 
 Software components:
-- CircuitPython software on Pico
+- CircuitPython 10 software on Pico
 - Windows PC host built with C#/.NET 9
 
 Components are connected using USB CDC serial port
@@ -40,7 +40,7 @@ Components are connected using USB CDC serial port
 3. Put **.uf2** file on **RPI-RP2**/**RP2350** drive
 
 ### From scratch
-1. [Install CircuitPython](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython)
+1. [Install CircuitPython 10](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython)
 2. Connect Pico to USB port, **CIRCUITPY** drive should appear
 3. Install Adafruit libraries. This can be done using [**circup**](https://github.com/adafruit/circup)
    ```bash
