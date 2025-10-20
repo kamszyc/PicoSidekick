@@ -7,7 +7,7 @@ DIY USB screen for Windows PC.
 ![Sidekick photo](images/sidekick.jpg)
 
 Built with:
-- Raspberry Pi Pico
+- Raspberry Pi Pico / Pico 2
 - cheap 2.8" TFT touch screen, with ILI9341 and XPT2046 controllers and 240x320 resolution
 
 Software components:
@@ -32,12 +32,12 @@ Components are connected using USB CDC serial port
 ![Settings](images/settings.png) \
 ![Context menu](images/context_menu.png)
 
-## Installation on Raspberry Pi Pico
+## Installation on Raspberry Pi Pico / Pico 2
 
 ### From released uf2 file
 1. Get **.uf2** file from [latest release](https://github.com/kamszyc/PicoSidekick/releases/latest)
 2. Hold **BOOTSEL** button and connect Pi to PC
-3. Put **.uf2** file on **RPI-RP2** drive
+3. Put **.uf2** file on **RPI-RP2**/**RP2350** drive
 
 ### From scratch
 1. [Install CircuitPython](https://learn.adafruit.com/getting-started-with-raspberry-pi-pico-circuitpython/circuitpython)
