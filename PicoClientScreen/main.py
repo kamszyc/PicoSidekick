@@ -20,6 +20,7 @@ from adafruit_display_shapes.rect import Rect
 from adafruit_displayio_layout.layouts.page_layout import PageLayout
 from pinout import *
 import pwmio
+import fourwire
 
 SHUTDOWN_BUTTON_TEXT = "SHUTDOWN"
 CONFIRMATION_TEXT = "SURE?"
@@ -129,7 +130,7 @@ async def render_display(page_layout, play_button, pause_button, prev_button, ne
 
     tft_spi = busio.SPI(TFT_SPI_CLK, MOSI=TFT_SPI_MOSI)
 
-    display_bus = displayio.FourWire(
+    display_bus = fourwire.FourWire(
         tft_spi, command=TFT_DC, chip_select=TFT_CS, reset=TFT_RES)
 
     display = adafruit_ili9341.ILI9341(
