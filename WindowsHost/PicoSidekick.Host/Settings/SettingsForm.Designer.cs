@@ -87,7 +87,7 @@
             okButton.TabIndex = 1;
             okButton.Text = "OK";
             okButton.UseVisualStyleBackColor = true;
-            okButton.Click += okButton_Click;
+            okButton.Click += OkButton_Click;
             // 
             // cancelButton
             // 

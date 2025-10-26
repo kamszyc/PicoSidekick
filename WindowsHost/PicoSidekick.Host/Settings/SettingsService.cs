@@ -11,7 +11,7 @@ namespace PicoSidekick.Host.Settings
         private SettingsModel _settings;
         private bool _settingsUpdated;
         private bool _disableChanges;
-        private Lock _lock = new Lock();
+        private readonly Lock _lock = new();
 
         public SettingsModel Settings
         {
