@@ -44,7 +44,11 @@ namespace PicoSidekick.Host
             };
             trayIcon.DoubleClick += (sender, e) =>
             {
-                HandleSettingsClick();
+                var status = _serialPortStatusService.GetStatus();
+                if (status.IsConnected)
+                    HandleSettingsClick();
+                else
+                    MessageBox.Show("Device is not connected. Connect the device and try again.", "Pico Sidekick Host", MessageBoxButtons.OK, MessageBoxIcon.Information);
             };
 
             var serialPortStatus = _serialPortStatusService.GetStatus();
