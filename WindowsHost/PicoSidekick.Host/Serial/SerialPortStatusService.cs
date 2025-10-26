@@ -9,7 +9,7 @@ namespace PicoSidekick.Host.Serial
     public class SerialPortStatusService
     {
         private SerialPortStatus _serialPortStatus;
-        private Lock _lockObj = new Lock();
+        private Lock _lockObj = new();
 
         public SerialPortStatusService()
         {

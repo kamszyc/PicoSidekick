@@ -9,14 +9,14 @@ namespace PicoSidekick.Host.Models
 {
     public class UpdateRequest
     {
-        public string Time { get; set; }
-        public bool IsMediaActive { get; set; }
-        public string Artist { get; set; }
-        public string Title { get; set; }
-        public bool IsPlaying { get; set; }
-        public float UsedCPUPercent { get; set; }
-        public float UsedRAMGigabytes { get; set; }
-        public float TotalRAMGigabytes { get; set; }
-        public SettingsModel UpdatedSettings { get; set; }
+        public string Time { get; init; }
+        public bool IsMediaActive { get; init; }
+        public string Artist { get; init; }
+        public string Title { get; init; }
+        public bool IsPlaying { get; init; }
+        public float UsedCPUPercent { get; init; }
+        public float UsedRAMGigabytes { get; init; }
+        public float TotalRAMGigabytes { get; init; }
+        public SettingsModel UpdatedSettings { get; init; }
     }
 }

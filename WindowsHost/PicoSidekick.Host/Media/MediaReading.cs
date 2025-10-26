@@ -8,9 +8,9 @@ namespace PicoSidekick.Host.Media
 {
     public class MediaReading
     {
-        public bool IsMediaActive { get; set; }
-        public string Artist { get; set; }
-        public string Title { get; set; }
-        public bool IsPlaying { get; set; }
+        public bool IsMediaActive { get; init; }
+        public string Artist { get; init; }
+        public string Title { get; init; }
+        public bool IsPlaying { get; init; }
     }
 }

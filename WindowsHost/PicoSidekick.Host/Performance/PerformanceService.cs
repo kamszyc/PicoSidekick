@@ -31,7 +31,7 @@ namespace PicoSidekick.Host.Performance
         {
             float cpu = (float)Math.Round(_cpuCounter.NextValue());
             float usedRamInGigabytes = CalculateUsedRam(_totalRamInGigabytes, _availableRamCounter);
-            return new PerformanceReading { Cpu = cpu, UsedRamInGigabytes = usedRamInGigabytes };
+            return new PerformanceReading(cpu, usedRamInGigabytes);
         }
 
         private static float CalculateUsedRam(float totalRamInGigabytes, PerformanceCounter availableRamCounter)
