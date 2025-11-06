@@ -2,7 +2,8 @@
 
 ![Build Host](https://github.com/kamszyc/PicoSidekick/actions/workflows/build-host-and-release.yml/badge.svg)
 
-DIY USB screen for Windows PC.
+DIY USB screen for Windows PC.\
+It's not really useful after all, so I treat this project as educational sandbox for both microcontroller development and new .NET versions. 
 
 ![Sidekick photo](images/sidekick.jpg)
 
