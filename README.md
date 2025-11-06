@@ -47,7 +47,7 @@ Components are connected using USB CDC serial port
    ```bash
    circup install adafruit_button adafruit_hid asyncio adafruit_display_text adafruit_ili9341 adafruit_displayio_layout
    ```
-4. Remove preinstalled **code.py** file and put files from **PicoClientScreen** directory into **CIRCUITPY** drive
+4. Remove preinstalled **code.py** file and put files from **Sidekick** directory into **CIRCUITPY** drive
 5. Disconnect Pico from USB and connect it again
 
 ## Preparing Pico uf2 release
