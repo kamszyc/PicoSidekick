@@ -13,7 +13,7 @@ Built with:
 
 Software components:
 - CircuitPython 10 software on Pico
-- Windows PC host built with C#/.NET 9
+- Windows PC host built with C#/.NET 10
 
 Components are connected using USB CDC serial port
 
